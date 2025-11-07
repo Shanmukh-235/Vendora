@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendora | Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- ✅ Success Toast -->
+    <div x-data="{ show: false, message: '' }" x-init="
+         const msg = $el.getAttribute('data-message');
+         if (msg && msg.length > 0) {
+           message = msg;
+           show = true;
+           setTimeout(() => show = false, 3000);
+         }
+       " x-show="show" x-transition
+        class="fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium"
+        style="display: none;" th:attr="data-message=${success}">
+        <span x-text="message"></span>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-center h-16 border-b">
+                <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/shop/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders"
+                    class="flex items-center gap-3 py-3 px-6 bg-blue-100 text-blue-700 font-medium rounded-r-full">📦
+                    Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+            </nav>
+        </div>
+
+        <div class="p-6 border-t">
+            <a href="/logout"
+                class="block text-center cursor-pointer bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="ml-64 min-h-screen">
+
+        <!-- Header -->
+        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-lg font-semibold text-gray-700">📦 Your Orders</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700 text-sm">
+                    Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
+                </span>
+                <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+                    alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
+            </div>
+        </header>
+
+        <!-- Orders Section -->
+        <section class="p-10">
+            <div class="bg-white shadow-lg rounded-2xl p-8">
+                <h3 class="text-xl font-semibold mb-4">Recent Orders</h3>
+
+                <div th:if="${#lists.isEmpty(orders)}" class="text-center text-gray-500 italic">
+                    You haven’t placed any orders yet.
+                    <a th:href="@{/shop}" class="text-blue-600 hover:underline">Start shopping</a>!
+                </div>
+
+                <div th:unless="${#lists.isEmpty(orders)}">
+                    <table class="w-full border-collapse">
+                        <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
+                            <tr>
+                                <th class="text-left py-3 px-4">Order ID</th>
+                                <th class="text-left py-3 px-4">Date</th>
+                                <th class="text-left py-3 px-4">Total</th>
+                                <th class="text-left py-3 px-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}" class="border-b hover:bg-gray-50 transition">
+                                <td class="py-3 px-4 font-medium text-gray-800" th:text="${order.id}">1</td>
+                                <td class="py-3 px-4 text-gray-600"
+                                    th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">06 Nov 2025
+                                </td>
+                                <td class="py-3 px-4 text-blue-600 font-medium">₹<span
+                                        th:text="${order.totalAmount}">0.00</span></td>
+                                <td class="py-3 px-4">
+                                    <span th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
+                          (order.status == 'PLACED' ? 'text-blue-600' : 'text-gray-600')" class="text-sm font-medium">
+                                        PLACED
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

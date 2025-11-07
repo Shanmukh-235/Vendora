@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendora | Add/Edit Category</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-[Inter]">
+
+<nav class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Vendora Admin</h1>
+    <a href="/logout" class="bg-white text-indigo-600 px-4 py-1 rounded hover:bg-indigo-100 transition">Logout</a>
+</nav>
+
+<div class="container mx-auto p-6 max-w-xl">
+
+    <h2 class="text-2xl font-bold text-indigo-600 mb-6" 
+        th:text="${category.id != null} ? 'Edit Category' : 'Add New Category'">Add/Edit Category</h2>
+
+    <form th:action="@{/admin/categories/save}" th:object="${category}" method="post" 
+          class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Category Name</label>
+            <input type="text" th:field="*{name}" required
+                   class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea th:field="*{description}" rows="3"
+                      class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+        </div>
+
+        <button type="submit" 
+                class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition shadow-md hover:shadow-lg">
+            Save Category
+        </button>
+
+    </form>
+</div>
+
+</body>
+</html>

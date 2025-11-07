@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="'Vendora | ' + ${product.name}">Vendora | Product</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Sidebar -->
+    <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-center h-16 border-b">
+                <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
+            </div>
+
+            <nav class="mt-6 space-y-1">
+                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop"
+                    class="flex items-center gap-3 py-3 px-6 bg-blue-100 text-blue-700 font-medium rounded-r-full">
+                    🛍️ Shop
+                </a>
+                <a href="/shop/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+            </nav>
+        </div>
+
+        <div class="p-6 border-t">
+            <a href="/logout"
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 min-h-screen">
+
+        <!-- Navbar -->
+        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-lg font-semibold text-gray-700">Product Details</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700 text-sm">
+                    Hello,
+                    <span class="font-medium text-blue-600" th:text="${user != null ? user.name : 'Guest'}">User</span>
+                </span>
+                <img th:src="${user != null && user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+                    alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
+            </div>
+        </header>
+
+        <!-- Product Details -->
+        <section class="p-10">
+            <div class="bg-white shadow-lg rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+
+                <!-- Product Image -->
+                <div class="flex justify-center items-center">
+                    <img th:src="@{${product.imageUrl}}" alt="Product Image"
+                        class="rounded-2xl shadow-md w-full max-w-md h-96 object-cover border border-gray-100" />
+                </div>
+
+                <!-- Product Info -->
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-3xl font-bold mb-3 text-gray-900" th:text="${product.name}">Product Name</h1>
+                    <p class="text-gray-600 text-sm mb-4" th:text="${product.description}">
+                        Product description here.
+                    </p>
+
+                    <!-- Price -->
+                    <p class="text-3xl font-semibold text-blue-600 mb-4">
+                        ₹<span th:text="${product.price}">0.00</span>
+                    </p>
+
+                    <!-- Stock -->
+                    <p class="text-gray-500 mb-4">
+                        Stock: <span th:text="${product.stock}">0</span> available
+                    </p>
+
+                    <!-- Add to Cart / Wishlist / Buy Now -->
+                    <div class="mt-6 flex flex-wrap gap-4">
+
+                        <!-- Add to Cart -->
+                        <form th:action="@{/shop/action/cart/add/{id}(id=${product.id})}" method="get"
+                            class="flex items-center gap-3">
+                            <input type="number" name="quantity" min="1" value="1"
+                                class="border border-gray-300 rounded-lg w-20 px-2 py-1 text-center focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                            <button type="submit"
+                                class="bg-green-50 text-green-700 px-5 py-3 rounded-lg hover:bg-green-100 text-sm font-medium shadow-sm transition">
+                                🛒 Add to Cart
+                            </button>
+                        </form>
+
+                        <!-- Wishlist -->
+                        <a th:href="@{'/shop/wishlist/add/' + ${product.id}}"
+                            class="bg-pink-50 text-pink-700 px-5 py-3 rounded-lg hover:bg-pink-100 text-sm font-medium shadow-sm transition">
+                            ❤️ Add to Wishlist
+                        </a>
+
+                        <!-- Buy Now -->
+                        <a th:href="@{/shop/action/buy-now/{id}(id=${product.id})}"
+                            class="bg-orange-50 text-orange-700 px-5 py-3 rounded-lg hover:bg-orange-100 text-sm font-medium shadow-sm transition">
+                            ⚡ Buy Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products -->
+        <section class="p-10">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Related Products</h2>
+
+            <div th:if="${#lists.isEmpty(relatedProducts)}" class="text-gray-500 italic">
+                No related products found.
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+                th:unless="${#lists.isEmpty(relatedProducts)}">
+                <div th:each="rp : ${relatedProducts}"
+                    class="bg-white shadow-md rounded-xl p-4 hover:shadow-lg transition">
+                    <img th:src="@{${rp.imageUrl}}" alt="Product"
+                        class="rounded-lg w-full h-48 object-cover border border-gray-100 mb-3">
+                    <h3 class="text-gray-900 font-semibold text-sm mb-1" th:text="${rp.name}">Product Name</h3>
+                    <p class="text-blue-600 font-medium text-sm">₹<span th:text="${rp.price}">0.00</span></p>
+                    <a th:href="@{/shop/product/{id}(id=${rp.id})}"
+                        class="block text-center bg-blue-50 text-blue-600 mt-3 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+
+</html>

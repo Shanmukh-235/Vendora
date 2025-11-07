@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart | Vendora</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800">
+
+  <!-- Page Header -->
+  <header class="bg-white shadow-sm px-10 py-6 flex justify-between items-center sticky top-0 z-10">
+    <h1 class="text-3xl font-semibold text-blue-600">🛒 Your Shopping Cart</h1>
+    <a href="/shop" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
+      Continue Shopping
+    </a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="px-10 py-10">
+
+    <!-- Empty Cart -->
+    <div th:if="${#lists.isEmpty(cartItems)}" class="text-center py-32 text-gray-500">
+      <p class="text-lg mb-4">Your cart is empty.</p>
+      <a href="/shop" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+        Start Shopping
+      </a>
+    </div>
+
+    <!-- Cart Items -->
+    <div th:if="${!#lists.isEmpty(cartItems)}">
+
+      <!-- Cart Table -->
+      <div class="bg-white shadow-md rounded-xl overflow-hidden w-full">
+        <table class="w-full text-sm border-collapse">
+          <thead class="bg-blue-50 text-blue-700 uppercase text-xs">
+            <tr>
+              <th class="text-left px-6 py-3">Product</th>
+              <th class="px-6 py-3">Price</th>
+              <th class="px-6 py-3">Quantity</th>
+              <th class="px-6 py-3">Total</th>
+              <th class="px-6 py-3"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr th:each="item : ${cartItems}" class="border-b hover:bg-gray-50">
+              <td class="flex items-center gap-3 px-6 py-4">
+                <img th:src="${item.product.imageUrl}" alt="Product"
+                     class="w-14 h-14 object-cover rounded-lg border">
+                <span th:text="${item.product.name}" class="font-medium text-gray-700">Product Name</span>
+              </td>
+              <td class="text-center text-gray-600" th:text="'₹' + ${item.product.price}"></td>
+              <td class="text-center text-gray-600" th:text="${item.quantity}"></td>
+              <td class="text-center font-semibold text-blue-600" th:text="'₹' + ${item.totalPrice}"></td>
+              <td class="text-center">
+                <form th:action="@{'/cart/remove/' + ${item.id}}" method="post">
+                  <button class="bg-red-50 text-red-600 px-3 py-1 rounded-lg hover:bg-red-100 text-sm font-medium">
+                    Remove
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Checkout Section -->
+      <div class="flex justify-end items-center mt-8 px-2">
+        <div class="text-right">
+          <p class="text-lg font-semibold text-gray-700 mb-2">
+            Total:
+            <span class="text-blue-600 font-bold" th:text="'₹' + ${total}">₹0.00</span>
+          </p>
+          <form action="/cart/checkout" method="post">
+            <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+              Proceed to Checkout
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

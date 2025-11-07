@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendora | Wishlist</title>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+  <!-- ✅ Toast Notification -->
+  <div x-data="{ show: false, message: '', success: false }"
+       x-init="
+         const msg = $el.getAttribute('data-message');
+         if (msg && msg.length > 0) {
+           message = msg;
+           success = msg.toLowerCase().includes('added') || msg.toLowerCase().includes('moved');
+           show = true;
+           setTimeout(() => show = false, 3000);
+         }"
+       x-show="show"
+       x-transition
+       th:attr="data-message=${success}"
+       :class="success ? 'bg-green-600' : 'bg-blue-600'"
+       class="fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-50"
+       style="display: none;">
+    <span x-text="message"></span>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
+    <div>
+      <div class="flex items-center justify-center h-16 border-b">
+        <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
+      </div>
+      <nav class="mt-6 space-y-1">
+        <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
+        <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
+        <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
+        <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
+        <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 bg-pink-100 text-pink-600 font-medium rounded-r-full">❤️ Wishlist</a>
+        <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+      </nav>
+    </div>
+    <div class="p-6 border-t">
+      <a href="/logout"
+         class="block text-center cursor-pointer bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+        Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ml-64 min-h-screen">
+    <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+      <h2 class="text-lg font-semibold text-gray-700">❤️ My Wishlist</h2>
+      <div class="flex items-center space-x-4">
+        <span class="text-gray-700 text-sm">Hello,
+          <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
+        </span>
+        <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+             alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
+      </div>
+    </header>
+
+    <section class="p-10">
+      <div class="bg-white shadow-lg rounded-2xl p-8">
+        <div th:if="${#lists.isEmpty(wishlist)}" class="text-center py-16">
+          <p class="text-gray-500 text-lg">Your wishlist is empty 😔</p>
+          <a href="/shop"
+             class="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-sm font-medium">
+            🛍️ Go Shopping
+          </a>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(wishlist)}"
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
+          <div th:each="product : ${wishlist}" th:if="${product != null}"
+               class="bg-white shadow-md rounded-xl p-5 border border-gray-100 hover:shadow-lg transition">
+
+            <img th:if="${product.imageUrl != null}" th:src="@{${product.imageUrl}}" alt="Product Image"
+                 class="w-full h-56 object-cover rounded-lg mb-4">
+            <img th:if="${product.imageUrl == null}" src="/images/default-product.jpg" alt="Default Product"
+                 class="w-full h-56 object-cover rounded-lg mb-4">
+
+            <h2 class="text-lg font-semibold text-gray-900 mb-1" th:text="${product.name}">Product Name</h2>
+            <p class="text-gray-600 text-sm mb-2 line-clamp-2" th:text="${product.description}">Product description</p>
+            <p class="text-blue-600 font-semibold mb-4">
+              ₹<span th:text="${product.price}">0.00</span>
+            </p>
+
+            <div class="flex gap-3">
+              <a th:href="@{'/shop/wishlist/move-to-cart/' + ${product.id}}"
+                 class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-medium">
+                 🛒 Move to Cart
+              </a>
+              <a th:href="@{'/shop/wishlist/remove/' + ${product.id}}"
+                 class="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                 ✖ Remove
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

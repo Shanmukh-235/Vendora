@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendora | Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-[Inter]">
+
+<div class="container mx-auto p-6">
+
+    <h1 class="text-3xl font-bold text-indigo-600 mb-6">Shopping Cart</h1>
+
+    <div th:if="${#lists.isEmpty(items)}" class="text-gray-600">
+        Your cart is empty.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(items)}">
+        <table class="min-w-full bg-white shadow-lg rounded-2xl overflow-hidden mb-6">
+            <thead class="bg-indigo-100">
+                <tr>
+                    <th class="px-6 py-3 text-left">Product</th>
+                    <th class="px-6 py-3 text-left">Price</th>
+                    <th class="px-6 py-3 text-left">Quantity</th>
+                    <th class="px-6 py-3 text-left">Total</th>
+                    <th class="px-6 py-3 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${items}">
+                    <td class="px-6 py-3" th:text="${item.product.name}">Product Name</td>
+                    <td class="px-6 py-3" th:text="${item.product.price}">$0.00</td>
+                    <td class="px-6 py-3">
+                        <form th:action="@{|/cart/update/${item.product.id}|}" method="post" class="flex space-x-2">
+                            <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                                   class="w-16 border rounded p-1">
+                            <button type="submit" class="bg-indigo-600 text-white px-2 rounded hover:bg-indigo-700">Update</button>
+                        </form>
+                    </td>
+                    <td class="px-6 py-3" th:text="${item.totalPrice}">$0.00</td>
+                    <td class="px-6 py-3">
+                        <a th:href="@{|/cart/remove/${item.product.id}|}" 
+                           class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Remove</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="flex justify-end font-bold text-xl mb-4">
+            Total: <span class="ml-2" th:text="${total}">$0.00</span>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Checkout</button>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

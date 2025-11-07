@@ -1,0 +1,193 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8fafc;
+    color: #1f2937;
+    margin: 0;
+    padding: 30px;
+}
+
+h1, h2 {
+    color: #111827;
+    margin-bottom: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* DASHBOARD CARDS */
+.stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #ffffff;
+    flex: 1 1 240px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card h2 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: #4b5563;
+}
+
+.card p {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* PRODUCT TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+th, td {
+    padding: 14px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    background-color: #1f2937;
+    color: #f9fafb;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+}
+
+tr:hover {
+    background-color: #f3f4f6;
+}
+
+img {
+    border-radius: 8px;
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+}
+
+/* BUTTONS */
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Primary buttons */
+.btn-edit {
+    background-color: #2563eb;
+}
+
+.btn-edit:hover {
+    background-color: #1d4ed8;
+}
+
+/* Stock update */
+.btn-stock {
+    background-color: #10b981;
+}
+
+.btn-stock:hover {
+    background-color: #059669;
+}
+
+/* Toggle on/off */
+.btn-toggle {
+    background-color: #f59e0b;
+}
+
+.btn-toggle:hover {
+    background-color: #d97706;
+}
+
+/* Delete */
+.btn-delete {
+    background-color: #dc2626;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+/* STOCK INPUT */
+input[type="number"] {
+    width: 70px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.3);
+}
+
+/*  RESPONSIVE */
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+        color: #6b7280;
+    }
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Admin Dashboard - Vendora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <!-- Header -->
+    <header class="p-6 text-center flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard | Vendora</h1>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-8">
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white rounded-2xl shadow p-6 text-center">
+                <h2 class="text-gray-500 font-semibold mb-2">Total Users</h2>
+                <p class="text-3xl font-bold text-center text-red-600" th:text="${totalUsers}"></p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-6 text-center">
+                <h2 class="text-gray-500 font-semibold mb-2">Total Products</h2>
+                <p class="text-3xl font-bold text-center text-black-900" th:text="${totalProducts}"></p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-6 text-center">
+                <h2 class="text-gray-500 font-semibold mb-2">Total Orders</h2>
+                <p class="text-3xl font-bold text-center text-blue-900" th:text="${totalOrders}"></p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-6 text-center">
+                <h2 class="text-gray-500 font-semibold mb-2">Total Revenue</h2>
+                <p class="text-3xl font-bold text-right text-green-600">₹<span th:text="${totalRevenue}"></span></p>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex flex-wrap justify-center gap-4 mb-10">
+            <a th:href="@{/admin/products}"
+                class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-lg font-medium">Manage
+                Products</a>
+            <a th:href="@{/admin/users}"
+                class="cursor-pointer bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 text-lg font-medium">Users</a>
+            <a th:href="@{/admin/delivery_agents}"
+                class="cursor-pointer bg-amber-50 text-amber-600 px-4 py-2 rounded-lg hover:bg-amber-100 text-lg font-medium">Delivery
+                Agents</a>
+            <a th:href="@{/admin/orders}"
+                class="cursor-pointer bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100  text-lg font-medium">Orders</a>
+        </div>
+
+        <!-- Product Overview Table -->
+        <section class="bg-white rounded-2xl shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Product Overview</h2>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-800 text-white text-sm uppercase tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4 text-center">ID</th>
+                            <th class="py-3 px-4 text-center">Image</th>
+                            <th class="py-3 px-4 text-center">Name</th>
+                            <th class="py-3 px-4 text-center">Price</th>
+                            <th class="py-3 px-4 text-center">Stock</th>
+                            <th class="py-3 px-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-gray-700">
+                        <tr th:each="p : ${products}" class="hover:bg-gray-50">
+                            <td class="py-3 px-4" th:text="${p.id}"></td>
+                            <td class="py-3 px-4">
+                                <img th:src="@{${p.imageUrl}}" alt="Product" class="w-12 justify-center h-12 rounded-lg object-cover">
+                            </td>
+                            <td class="py-3 px-4 font-medium" th:text="${p.name}"></td>
+                            <td class="py-3 px-4" th:text="${p.price}"></td>
+                            <td class="py-3 px-4 font-semibold text-gray-900" th:text="${p.stock}"></td>
+                            <td class="py-3 px-4">
+                                <a th:href="@{'/admin/products/edit/' + ${p.id}}"
+                                    class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+
+</html>
+
+<!-- http://127.0.0.1:5500/src/main/resources/templates/admin/delivery_agents.html -->

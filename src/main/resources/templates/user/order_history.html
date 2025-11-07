@@ -1,0 +1,22 @@
+<h1 class="text-3xl font-bold text-indigo-600 mb-6">Your Orders</h1>
+
+<table th:if="${!#lists.isEmpty(orders)}">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}">1</td>
+            <td th:text="${#dates.format(order.orderTime, 'dd-MM-yyyy HH:mm')}">Date</td>
+            <td th:text="${order.totalAmount}">$0.00</td>
+            <td th:text="${order.status}">Pending</td>
+        </tr>
+    </tbody>
+</table>
+
+<p th:if="${#lists.isEmpty(orders)}">You have no past orders.</p>

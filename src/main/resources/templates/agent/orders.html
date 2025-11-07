@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Orders | Vendora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+    <main class="max-w-6xl mx-auto px-6 py-10">
+        <h1 class="text-2xl font-semibold text-blue-600 mb-6">📦 Orders for Delivery</h1>
+
+        <table class="w-full bg-white shadow-md rounded-2xl overflow-hidden">
+            <thead class="bg-blue-50 text-blue-700 uppercase text-xs">
+                <tr>
+                    <th class="px-6 py-3 text-left">Order ID</th>
+                    <th class="px-6 py-3 text-left">User</th>
+                    <th class="px-6 py-3 text-left">Total</th>
+                    <th class="px-6 py-3 text-left">Status</th>
+                    <th class="px-6 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}" class="border-b hover:bg-gray-50">
+                    <td class="px-6 py-4" th:text="${order.id}"></td>
+                    <td class="px-6 py-4" th:text="${order.user.name}"></td>
+                    <td class="px-6 py-4" th:text="'₹' + ${order.total}"></td>
+                    <td class="px-6 py-4 font-semibold"
+                        th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' : 'text-yellow-600'"
+                        th:text="${order.status}">
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a th:href="@{'/agent/toggle-delivery/' + ${order.id}}"
+                            class="px-4 py-1 rounded-lg text-sm font-medium"
+                            th:classappend="${order.status == 'DELIVERED'} ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'">
+                            <span
+                                th:text="${order.status == 'DELIVERED'} ? '✅ Mark Undelivered' : '🚚 Mark Delivered'"></span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+
+</html>

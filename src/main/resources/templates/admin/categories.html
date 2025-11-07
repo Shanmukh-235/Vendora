@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendora | Manage Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-[Inter]">
+
+<nav class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Vendora Admin</h1>
+    <a href="/logout" class="bg-white text-indigo-600 px-4 py-1 rounded hover:bg-indigo-100 transition">Logout</a>
+</nav>
+
+<div class="container mx-auto p-6">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-indigo-600">Manage Categories</h2>
+        <a href="/admin/categories/add" 
+           class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+           Add New Category
+        </a>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-indigo-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="category : ${categories}">
+                    <td class="px-6 py-4" th:text="${category.id}">1</td>
+                    <td class="px-6 py-4" th:text="${category.name}">Category Name</td>
+                    <td class="px-6 py-4" th:text="${category.description}">Description</td>
+                    <td class="px-6 py-4 space-x-2">
+                        <a th:href="@{|/admin/categories/edit/${category.id}|}" 
+                           class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 transition">Edit</a>
+                        <a th:href="@{|/admin/categories/delete/${category.id}|}" 
+                           class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
