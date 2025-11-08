@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,20 +18,18 @@ import com.vendora.service.CartService;
 import com.vendora.service.OrderService;
 import com.vendora.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping("/checkout")
+@RequiredArgsConstructor
 public class CheckoutController {
 
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
+    private final OrderService orderService;
+    private final UserService userService;
 
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
-
-    // 🧾 Show checkout page
+    /** 🧾 Display Checkout Page */
     @GetMapping
     public String checkoutPage(Model model, Principal principal) {
         User user = userService.getLoggedInUser();
@@ -40,47 +37,46 @@ public class CheckoutController {
             return "redirect:/login";
         }
 
-        List<CartItem> items = cartService.getCartItemsList(); // ✅ no user param
+        List<CartItem> items = cartService.getCartItemsList();
         if (items.isEmpty()) {
             model.addAttribute("error", "Your cart is empty!");
             return "shop/cart";
         }
 
-        BigDecimal total = items.stream()
-                .map(CartItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = cartService.getTotal();
 
         model.addAttribute("user", user);
         model.addAttribute("items", items);
         model.addAttribute("total", total);
-
         return "shop/checkout";
     }
 
-    // 💳 Place order
+    /** 💳 Place Order */
     @PostMapping
     public String placeOrder(Principal principal, RedirectAttributes redirectAttributes) {
         User user = userService.findByEmail(principal.getName()).orElse(null);
-
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "Please log in to complete your order.");
             return "redirect:/login";
         }
 
-        List<CartItem> cartItems = cartService.getCartItemsList(); // ✅ no user param
+        List<CartItem> cartItems = cartService.getCartItemsList();
         if (cartItems.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Your cart is empty!");
-            return "redirect:/shop/cart";
+            return "redirect:/cart";
         }
 
+        // ✅ Create and save order
         Order order = orderService.placeOrder(user, cartItems);
+
+        // ✅ Clear cart AFTER placing order
         cartService.clearCart();
 
         redirectAttributes.addFlashAttribute("success", "✅ Order placed successfully!");
         return "redirect:/user/orders";
     }
 
-    // 📦 Order history
+    /** 🧾 Order History */
     @GetMapping("/history")
     public String orderHistory(Principal principal, Model model) {
         User user = userService.findByEmail(principal.getName()).orElse(null);

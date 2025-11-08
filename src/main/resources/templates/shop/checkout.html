@@ -7,6 +7,7 @@
     <title>Vendora | Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-800" th:with="successMessage=${success}, errorMessage=${error}">
@@ -103,8 +104,8 @@
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}"
                                 th:value="${_csrf.token}" />
                             <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-sm font-medium shadow-md transition">
-                                ✅ Confirm Purchase
+                                class="bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium">
+                                <i class="ri-checkbox-circle-line"></i> Confirm Purchase
                             </button>
                         </form>
                     </div>

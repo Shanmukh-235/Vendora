@@ -26,7 +26,7 @@ public class CartController {
     private final CartService cartService;
     private final ProductService productService;
 
-    // GET /cart
+    /** 🛒 View Cart Page */
     @GetMapping
     public String viewCart(Model model) {
         Map<Long, Integer> cartItems = cartService.getCartItems();
@@ -44,32 +44,18 @@ public class CartController {
         return "shop/cart";
     }
 
-    // POST /cart/add/{productId}
+    /** ➕ Add to Cart */
     @PostMapping("/add/{productId}")
     public String addToCart(@PathVariable Long productId,
                             @RequestParam(defaultValue = "1") int quantity) {
         Product product = productService.findById(productId);
         if (product != null) {
-            cartService.addToCart(product, quantity); // increments safely
+            cartService.addToCart(product, quantity);
         }
         return "redirect:/cart";
     }
 
-    // GET /cart/remove/{productId}
-    @GetMapping("/remove/{productId}")
-    public String removeFromCart(@PathVariable Long productId) {
-        cartService.removeFromCart(productId);
-        return "redirect:/cart";
-    }
-
-    // GET /cart/clear
-    @GetMapping("/clear")
-    public String clearCart() {
-        cartService.clearCart();
-        return "redirect:/cart";
-    }
-
-    // POST /cart/increase/{productId} - increases by 1
+    /** 🔼 Increase Quantity */
     @PostMapping("/increase/{productId}")
     public String increaseQuantity(@PathVariable Long productId) {
         Product product = productService.findById(productId);
@@ -79,10 +65,24 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // POST /cart/decrease/{productId} - decreases by 1
-      @PostMapping("/decrease/{productId}")
+    /** 🔽 Decrease Quantity */
+    @PostMapping("/decrease/{productId}")
     public String decreaseQuantity(@PathVariable Long productId) {
         cartService.decreaseQuantity(productId);
+        return "redirect:/cart";
+    }
+
+    /** ❌ Remove Product */
+    @GetMapping("/remove/{productId}")
+    public String removeFromCart(@PathVariable Long productId) {
+        cartService.removeFromCart(productId);
+        return "redirect:/cart";
+    }
+
+    /** 🧹 Clear Cart */
+    @GetMapping("/clear")
+    public String clearCart() {
+        cartService.clearCart();
         return "redirect:/cart";
     }
 }

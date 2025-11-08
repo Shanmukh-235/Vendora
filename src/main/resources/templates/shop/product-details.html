@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="'Vendora | ' + ${product.name}">Vendora | Product</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-800">
@@ -20,7 +21,7 @@
             <nav class="mt-6 space-y-1">
                 <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
                 <a href="/shop"
-                    class="flex items-center gap-3 py-3 px-6 bg-blue-100 text-blue-700 font-medium rounded-r-full">
+                    class="flex items-center gap-3 py-3 px-6 bg-green-100 text-green-700 font-medium rounded-r-full">
                     🛍️ Shop
                 </a>
                 <a href="/shop/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
@@ -54,65 +55,67 @@
             </div>
         </header>
 
-        <!-- Product Details -->
-        <section class="p-10">
-            <div class="bg-white shadow-lg rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <!-- Product Section (no box) -->
+        <section class="px-10 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
 
                 <!-- Product Image -->
-                <div class="flex justify-center items-center">
+                <div class="flex justify-center">
                     <img th:src="@{${product.imageUrl}}" alt="Product Image"
-                        class="rounded-2xl shadow-md w-full max-w-md h-96 object-cover border border-gray-100" />
+                        class="rounded-2xl w-full max-w-md h-[480px] object-cover border border-gray-200 shadow-sm" />
                 </div>
 
                 <!-- Product Info -->
-                <div class="flex flex-col justify-center">
-                    <h1 class="text-3xl font-bold mb-3 text-gray-900" th:text="${product.name}">Product Name</h1>
-                    <p class="text-gray-600 text-sm mb-4" th:text="${product.description}">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4 text-gray-900" th:text="${product.name}">Product Name</h1>
+                    <p class="text-gray-600 mb-6 text-base leading-relaxed" th:text="${product.description}">
                         Product description here.
                     </p>
 
-                    <!-- Price -->
                     <p class="text-3xl font-semibold text-blue-600 mb-4">
                         ₹<span th:text="${product.price}">0.00</span>
                     </p>
 
-                    <!-- Stock -->
-                    <p class="text-gray-500 mb-4">
-                        Stock: <span th:text="${product.stock}">0</span> available
+                    <p class="text-gray-500 mb-6 text-sm">
+                        Stock available:
+                        <span class="font-medium text-gray-800" th:text="${product.stock}">0</span>
                     </p>
 
-                    <!-- Add to Cart / Wishlist / Buy Now -->
-                    <div class="mt-6 flex flex-wrap gap-4">
+                    <!-- Buttons -->
+                    <div class="flex flex-wrap gap-4 mt-8">
 
                         <!-- Add to Cart -->
-                        <form th:action="@{/shop/action/cart/add/{id}(id=${product.id})}" method="get"
+                        <form th:action="@{/shop/action/cart/add/{id}(id=${product.id})}" method="post"
                             class="flex items-center gap-3">
                             <input type="number" name="quantity" min="1" value="1"
-                                class="border border-gray-300 rounded-lg w-20 px-2 py-1 text-center focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                                class="border border-gray-300 rounded-lg w-20 px-2 py-2 text-center focus:ring-2 focus:ring-blue-400 focus:outline-none" />
                             <button type="submit"
                                 class="bg-green-50 text-green-700 px-5 py-3 rounded-lg hover:bg-green-100 text-sm font-medium shadow-sm transition">
-                                🛒 Add to Cart
+                                <i class="ri-shopping-basket-line"></i> Add to Cart
                             </button>
                         </form>
 
                         <!-- Wishlist -->
                         <a th:href="@{'/shop/wishlist/add/' + ${product.id}}"
                             class="bg-pink-50 text-pink-700 px-5 py-3 rounded-lg hover:bg-pink-100 text-sm font-medium shadow-sm transition">
-                            ❤️ Add to Wishlist
+                            <i class="ri-heart-fill"></i> Wishlist
                         </a>
 
                         <!-- Buy Now -->
-                        <a th:href="@{/shop/action/buy-now/{id}(id=${product.id})}"
-                            class="bg-orange-50 text-orange-700 px-5 py-3 rounded-lg hover:bg-orange-100 text-sm font-medium shadow-sm transition">
-                            ⚡ Buy Now
-                        </a>
+                        <form th:action="@{/shop/action/buy-now/{id}(id=${product.id})}" method="post">
+                            <button type="submit"
+                                class="bg-orange-50 text-orange-700 px-5 py-3 rounded-lg hover:bg-orange-100 text-sm font-medium shadow-sm transition">
+                                <i class="ri-flashlight-fill"></i> Buy Now
+                            </button>
+                        </form>
                     </div>
+
                 </div>
             </div>
         </section>
 
         <!-- Related Products -->
-        <section class="p-10">
+        <section class="px-10 pb-16">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6">Related Products</h2>
 
             <div th:if="${#lists.isEmpty(relatedProducts)}" class="text-gray-500 italic">

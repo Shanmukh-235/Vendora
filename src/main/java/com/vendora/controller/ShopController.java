@@ -43,48 +43,37 @@ public class ShopController {
     private UserService userService;
 
     @Autowired
-    private WishlistService wishlistService; // ✅ add this
+    private WishlistService wishlistService;
 
-    // ---------------- ALL PRODUCTS ----------------
+    // 🛍️ All Products
     @GetMapping
-    public String viewShop(
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "sort", required = false) String sort,
-            Model model) {
+    public String viewShop(@RequestParam(value = "search", required = false) String search,
+                           @RequestParam(value = "category", required = false) String category,
+                           @RequestParam(value = "sort", required = false) String sort,
+                           Model model) {
 
         List<Product> products = productService.getAllProducts();
 
-        // Filter by search
         if (search != null && !search.isEmpty()) {
             products = products.stream()
                     .filter(p -> p.getName().toLowerCase().contains(search.toLowerCase()))
                     .toList();
         }
 
-        // Filter by category
         if (category != null && !category.isEmpty()) {
             products = products.stream()
                     .filter(p -> p.getCategory().equalsIgnoreCase(category))
                     .toList();
         }
 
-        // Sort
         if ("priceAsc".equals(sort)) {
-            products = products.stream()
-                    .sorted(Comparator.comparing(Product::getPrice))
-                    .toList();
+            products = products.stream().sorted(Comparator.comparing(Product::getPrice)).toList();
         } else if ("priceDesc".equals(sort)) {
-            products = products.stream()
-                    .sorted(Comparator.comparing(Product::getPrice).reversed())
-                    .toList();
+            products = products.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).toList();
         } else if ("newest".equals(sort)) {
-            products = products.stream()
-                    .sorted(Comparator.comparing(Product::getCreatedAt).reversed())
-                    .toList();
+            products = products.stream().sorted(Comparator.comparing(Product::getCreatedAt).reversed()).toList();
         }
 
-        // Categories
         List<String> categories = productService.getAllProducts().stream()
                 .map(Product::getCategory)
                 .filter(Objects::nonNull)
@@ -102,12 +91,11 @@ public class ShopController {
         return "shop/shop";
     }
 
-    // ---------------- PRODUCT DETAILS ----------------
+    // 🧾 Product Details
     @GetMapping("/product/{id}")
     public String productDetails(@PathVariable Long id, Model model) {
         Product product = productService.findById(id);
-        if (product == null)
-            return "redirect:/shop";
+        if (product == null) return "redirect:/shop";
 
         List<Product> relatedProducts = productService.findByCategory(product.getCategory()).stream()
                 .filter(p -> !p.getId().equals(id))
@@ -115,22 +103,17 @@ public class ShopController {
                 .toList();
 
         User user = userService.getLoggedInUser();
-        boolean isInWishlist = false;
-
-        // ✅ check wishlist status for logged-in user
-        if (user != null && product != null) {
-            isInWishlist = wishlistService.isInWishlist(user, product);
-        }
+        boolean isInWishlist = (user != null) && wishlistService.isInWishlist(user, product);
 
         model.addAttribute("product", product);
         model.addAttribute("relatedProducts", relatedProducts);
         model.addAttribute("user", user);
-        model.addAttribute("isInWishlist", isInWishlist); // ✅ added
+        model.addAttribute("isInWishlist", isInWishlist);
 
         return "shop/product-details";
     }
 
-    // ---------------- CART ----------------
+    // 🛒 Cart
     @GetMapping("/cart")
     public String viewCart(Model model) {
         Map<Long, Integer> cartItems = cartService.getCartItems();
@@ -146,7 +129,7 @@ public class ShopController {
         return "shop/cart";
     }
 
-    // ---------------- CHECKOUT ----------------
+    // 🧾 Checkout Page
     @GetMapping("/checkout")
     public String checkout(Model model) {
         Map<Long, Integer> cartItems = cartService.getCartItems();
@@ -160,17 +143,15 @@ public class ShopController {
                 .map(p -> p.getPrice().multiply(BigDecimal.valueOf(cartItems.getOrDefault(p.getId(), 0))))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        User user = userService.getLoggedInUser();
-
-        model.addAttribute("user", user);
         model.addAttribute("products", products);
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("total", total);
+        model.addAttribute("user", userService.getLoggedInUser());
 
         return "shop/checkout";
     }
 
-    // ✅ Confirm checkout — now correctly creates Order with items
+    // ✅ Confirm Checkout — Creates Order
     @PostMapping("/checkout/confirm")
     public String confirmCheckout(Principal principal, RedirectAttributes redirectAttributes) {
         User user = userService.getLoggedInUser();
@@ -180,17 +161,14 @@ public class ShopController {
             return "redirect:/login";
         }
 
-        List<CartItem> cartItems = cartService.getCartItemsList(user);
+        List<CartItem> cartItems = cartService.getCartItemsList();
         if (cartItems.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Your cart is empty!");
             return "redirect:/shop/cart";
         }
 
-        // ✅ Create order
         orderService.placeOrder(user, cartItems);
-
-        // ✅ Clear cart
-        cartService.clearCart(user);
+        cartService.clearCart();
 
         redirectAttributes.addFlashAttribute("success", "✅ Order placed successfully!");
         return "redirect:/user/orders";
