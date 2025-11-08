@@ -29,18 +29,32 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String orderNumber; // ✅ required for unique tracking
+    private String orderNumber; // ✅ unique tracking reference
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_agent_id")
+    private DeliveryAgent deliveryAgent; // ✅ assigned delivery agent
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items = new ArrayList<>();
 
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    private String status;
+    private String status = "PLACED"; // ✅ default status
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // Helper method to compute total
+    public BigDecimal getTotalAmount() {
+        if (items != null && !items.isEmpty()) {
+            return items.stream()
+                    .map(OrderItem::getTotalPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        return totalAmount != null ? totalAmount : BigDecimal.ZERO;
+    }
 }

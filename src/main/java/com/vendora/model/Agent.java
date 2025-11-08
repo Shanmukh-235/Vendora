@@ -29,6 +29,9 @@ public class Agent {
 
     private boolean active = true;
 
+    @Column(name = "vehicle_number")
+    private String vehicleNumber;
+
     // All agents share the same password: “vendora”
     private String password = "vendora";
 }

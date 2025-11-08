@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vendora.model.CartItem;
+import com.vendora.model.DeliveryAgent;
 import com.vendora.model.Order;
 import com.vendora.model.OrderItem;
 import com.vendora.model.User;
+import com.vendora.repository.DeliveryAgentRepository;
 import com.vendora.repository.OrderItemRepository;
 import com.vendora.repository.OrderRepository;
 
@@ -22,6 +24,9 @@ public class OrderService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private DeliveryAgentRepository deliveryAgentRepository;
 
     // 🛒 Place an order for a user from their cart items
     public Order placeOrder(User user, List<CartItem> cartItems) {
@@ -55,15 +60,47 @@ public class OrderService {
         return savedOrder;
     }
 
+    // 🔍 Fetch all orders (Admin view)
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    // 🔍 Fetch orders for a specific user (User dashboard)
     public List<Order> getOrdersByUser(User user) {
         return orderRepository.findByUser(user);
     }
 
+    // 🔍 Get single order by ID
     public Order getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 
+    // 📊 Count total orders placed by a user
     public long countOrdersByUser(User user) {
         return orderRepository.findByUser(user).size();
+    }
+
+    // 🚚 Assign delivery agent to an order
+    public void assignDeliveryAgent(Long orderId, Long agentId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        DeliveryAgent agent = deliveryAgentRepository.findById(agentId).orElse(null);
+
+        if (order != null && agent != null) {
+            order.setDeliveryAgent(agent);
+            orderRepository.save(order);
+        }
+    }
+
+    // 🔄 Toggle between "PLACED" and "DELIVERED"
+    public void toggleOrderStatus(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            if ("DELIVERED".equalsIgnoreCase(order.getStatus())) {
+                order.setStatus("PLACED");
+            } else {
+                order.setStatus("DELIVERED");
+            }
+            orderRepository.save(order);
+        }
     }
 }

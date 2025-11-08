@@ -79,12 +79,6 @@ public class AdminController {
         return "admin/users";
     }
 
-    @GetMapping("/orders")
-    public String orders(Model model) {
-        model.addAttribute("orders", orderRepository.findAll());
-        return "admin/orders";
-    }
-
     @GetMapping("/deliveries")
     public String deliveries(Model model) {
         model.addAttribute("deliveries", deliveryRepository.findAll());
