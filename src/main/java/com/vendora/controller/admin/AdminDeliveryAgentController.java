@@ -33,7 +33,10 @@ public class AdminDeliveryAgentController {
     // ➕ Add new agent
     @PostMapping("/add")
     public String addAgent(@ModelAttribute("newAgent") DeliveryAgent agent) {
-        agent.setActive(true); // Default active
+        agent.setActive(true);
+        if (agent.getPassword() == null || agent.getPassword().isEmpty()) {
+            agent.setPassword("vendora"); // ✅ default password
+        }
         deliveryAgentRepository.save(agent);
         return "redirect:/admin/delivery-agents";
     }

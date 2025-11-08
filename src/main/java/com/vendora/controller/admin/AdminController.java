@@ -1,6 +1,7 @@
 package com.vendora.controller.admin;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.vendora.model.Delivery;
+import com.vendora.model.Order;
 import com.vendora.repository.DeliveryRepository;
 import com.vendora.repository.OrderRepository;
 import com.vendora.repository.ProductRepository;
@@ -32,64 +34,62 @@ public class AdminController {
     @Autowired
     private DeliveryRepository deliveryRepository;
 
+    // ✅ Redirect base /admin → dashboard
     @GetMapping
     public String redirectToDashboard() {
         return "redirect:/admin/dashboard";
     }
 
+    // ✅ Dashboard with proper total revenue (from delivered orders only)
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        // Dashboard stats
+
         long totalUsers = userRepository.count();
         long totalProducts = productRepository.count();
         long totalOrders = orderRepository.count();
 
-        // Assuming Order has a field "totalPrice" of type BigDecimal or double
-        BigDecimal totalRevenue = orderRepository.findAll().stream()
-                .map(order -> {
-                    try {
-                        // Try to call getTotalPrice() reflectively if it exists
-                        var method = order.getClass().getMethod("getTotalPrice");
-                        Object value = method.invoke(order);
-                        if (value instanceof BigDecimal)
-                            return (BigDecimal) value;
-                        if (value instanceof Number)
-                            return BigDecimal.valueOf(((Number) value).doubleValue());
-                    } catch (Exception ignored) {
-                    }
-                    return BigDecimal.ZERO;
-                })
+        // 💰 Only include delivered orders
+        List<Order> deliveredOrders = orderRepository.findAll()
+                .stream()
+                .filter(order -> "DELIVERED".equalsIgnoreCase(order.getStatus()))
+                .toList();
+
+        BigDecimal totalRevenue = deliveredOrders.stream()
+                .map(Order::getTotalAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Add to model
+        // ✅ Add all to model
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("totalProducts", totalProducts);
         model.addAttribute("totalOrders", totalOrders);
         model.addAttribute("totalRevenue", totalRevenue);
 
-        // Optionally include product list for dashboard display
+        // For product overview table
         model.addAttribute("products", productRepository.findAll());
 
         return "admin/dashboard";
     }
 
+    // 👥 Users list
     @GetMapping("/users")
     public String users(Model model) {
         model.addAttribute("users", userRepository.findAll());
         return "admin/users";
     }
 
+    // 🚚 Deliveries list
     @GetMapping("/deliveries")
     public String deliveries(Model model) {
         model.addAttribute("deliveries", deliveryRepository.findAll());
         return "admin/deliveries";
     }
 
+    // ✅ Mark delivery as delivered (status update)
     @PostMapping("/deliveries/mark-delivered/{id}")
     public String markDelivered(@PathVariable Long id) {
         Delivery delivery = deliveryRepository.findById(id).orElseThrow();
-        delivery.setStatus("Delivered");
-        //delivery.setDeliveredAt(LocalDateTime.now());
+        delivery.setStatus("DELIVERED");
+        // delivery.setDeliveredAt(LocalDateTime.now());
         deliveryRepository.save(delivery);
         return "redirect:/admin/deliveries";
     }

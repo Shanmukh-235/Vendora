@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendora | Agent Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen py-10">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-10">
+      <div>
+        <h1 class="text-3xl font-bold text-indigo-700 flex items-center gap-2">🚚 Agent Dashboard</h1>
+        <p class="text-gray-500 text-sm mt-1" th:text="${agent != null ? 'Logged in as: ' + agent.email : 'Logged in as: (unknown)'}"></p>
+      </div>
+      <a href="/logout"
+         class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+        Logout
+      </a>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+      <table class="w-full text-sm text-left border-collapse">
+        <thead class="bg-indigo-600 text-white uppercase text-xs">
+          <tr>
+            <th class="py-3 px-6">Order ID</th>
+            <th class="py-3 px-6">Customer</th>
+            <th class="py-3 px-6">Mobile</th>
+            <th class="py-3 px-6">Address</th>
+            <th class="py-3 px-6">Date</th>
+            <th class="py-3 px-6">Total</th>
+            <th class="py-3 px-6 text-center">Status</th>
+            <th class="py-3 px-6 text-center">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="order : ${orders}" class="border-b hover:bg-gray-50 transition">
+            <td class="py-3 px-6 font-medium" th:text="${order.id}"></td>
+
+            <td class="py-3 px-6 font-medium text-gray-800" th:text="${order.user.name}"></td>
+
+            <!-- Mobile -->
+            <td class="py-3 px-6 text-gray-600" th:text="${order.user.phone}"></td>
+
+            <!-- Address -->
+            <td class="py-3 px-6 text-gray-600 max-w-xs truncate" th:text="${order.user.address}"></td>
+
+            <td class="py-3 px-6 text-gray-600"
+                th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+
+            <td class="py-3 px-6 font-medium" th:text="'₹' + ${order.totalAmount}"></td>
+
+            <!-- Status -->
+            <td class="py-3 px-6 text-center font-semibold"
+                th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
+                                (order.status == 'PLACED' ? 'text-yellow-500' : 'text-gray-600')"
+                th:text="${order.status}">
+            </td>
+
+            <!-- Action -->
+            <td class="py-3 px-6 text-center">
+              <a th:if="${order.status != 'DELIVERED'}"
+                 th:href="@{'/agent/toggle/' + ${order.id}}"
+                 class="block text-center bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium transition">
+                Mark Delivered
+              </a>
+              <span th:if="${order.status == 'DELIVERED'}"
+                    class="block text-center text-gray-400 text-sm italic">
+                Completed
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm mt-10">
+      © 2025 Vendora | Agent Panel
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.vendora.model.Agent;
+import com.vendora.model.DeliveryAgent;
 import com.vendora.repository.AgentRepository;
 
 @Controller
@@ -31,7 +31,7 @@ public class AdminAgentController {
                            @RequestParam String email,
                            @RequestParam(required = false) String phone) {
 
-        Agent agent = new Agent();
+        DeliveryAgent agent = new DeliveryAgent();
         agent.setName(name);
         agent.setEmail(email);
         agent.setPhone(phone);

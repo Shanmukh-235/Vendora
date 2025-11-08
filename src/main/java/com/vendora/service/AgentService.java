@@ -1,20 +1,19 @@
 package com.vendora.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.vendora.model.Agent;
+import com.vendora.model.DeliveryAgent;
 import com.vendora.model.Order;
-import com.vendora.repository.AgentRepository;
+import com.vendora.repository.DeliveryAgentRepository;
 import com.vendora.repository.OrderRepository;
 
 @Service
 public class AgentService {
 
     @Autowired
-    private AgentRepository agentRepository;
+    private DeliveryAgentRepository deliveryAgentRepository;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -24,7 +23,7 @@ public class AgentService {
         return orderRepository.findAll();
     }
 
-    // Toggle order delivery status
+    // Toggle delivery status (PLACED <-> DELIVERED)
     public void toggleDeliveryStatus(Long orderId) {
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order != null) {
@@ -37,8 +36,8 @@ public class AgentService {
         }
     }
 
-    // Agent management (optional)
-    public List<Agent> getAllAgents() {
-        return agentRepository.findAll();
+    // Fetch all agents
+    public List<DeliveryAgent> getAllAgents() {
+        return deliveryAgentRepository.findAll();
     }
 }

@@ -1,20 +1,17 @@
-// model/DeliveryAgent.java
 package com.vendora.model;
-
-import org.springframework.data.annotation.Transient;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "delivery_agent")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryAgent {
@@ -24,16 +21,18 @@ public class DeliveryAgent {
     private Long id;
 
     private String name;
-    private String phone;
     private String email;
+    private String phone;
     private String vehicleNumber;
     private String vehicleType;
-    private boolean active = true;
-    private int totalDeliveries;
-    private int pendingDeliveries;
-    @Transient
-    private long pendingDeliveriesCount;
 
-    @Transient
-    private long completedDeliveriesCount;
+    private boolean active = true;
+
+    private int noOfDeliveries = 0;
+    private int completedDeliveriesCount = 0;
+    private int pendingDeliveriesCount = 0;
+    private int pendingDeliveries = 0;
+    private int totalDeliveries = 0;
+
+    private String password = "vendora"; // ✅ default for all agents
 }

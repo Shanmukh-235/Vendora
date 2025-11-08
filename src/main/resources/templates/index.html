@@ -105,8 +105,8 @@
                     <img th:src="@{${product.imageUrl}}" alt="Product"
                         class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-1" th:text="${product.name}">Product Name</h3>
-                        <p class="text-gray-600 mb-4 text-lg" th:text="'$' + ${product.price}">Price</p>
+                        <h3 class="text-md font-semibold text-gray-900 mb-1" th:text="${product.name}">Product Name</h3>
+                        <p class="text-gray-600 mb-4 text-sm" th:text="'$' + ${product.price}">Price</p>
                         <button
                             class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-105 shadow-md hover:shadow-xl">
                             Add to Cart

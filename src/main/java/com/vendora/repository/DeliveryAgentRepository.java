@@ -7,4 +7,5 @@ import com.vendora.model.DeliveryAgent;
 
 @Repository
 public interface DeliveryAgentRepository extends JpaRepository<DeliveryAgent, Long> {
+     DeliveryAgent findByEmail(String email);
 }

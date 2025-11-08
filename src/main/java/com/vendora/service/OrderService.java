@@ -80,6 +80,14 @@ public class OrderService {
         return orderRepository.findByUser(user).size();
     }
 
+    // 🔍 Fetch orders assigned to a specific delivery agent
+    public List<Order> getOrdersAssignedToAgent(DeliveryAgent agent) {
+        if (agent == null) {
+            return List.of(); // return empty list if no agent
+        }
+        return orderRepository.findByDeliveryAgent(agent);
+    }
+
     // 🚚 Assign delivery agent to an order
     public void assignDeliveryAgent(Long orderId, Long agentId) {
         Order order = orderRepository.findById(orderId).orElse(null);
@@ -103,4 +111,13 @@ public class OrderService {
             orderRepository.save(order);
         }
     }
+
+    // 💰 Calculate total revenue (sum of delivered orders)
+    public BigDecimal getTotalRevenue() {
+        return orderRepository.findAll().stream()
+                .filter(order -> "DELIVERED".equalsIgnoreCase(order.getStatus()))
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

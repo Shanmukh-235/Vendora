@@ -12,6 +12,10 @@ public class DeliveryAgentService {
 
     private final DeliveryAgentRepository deliveryAgentRepository;
 
+    public DeliveryAgent findByEmail(String email) {
+        return deliveryAgentRepository.findByEmail(email);
+    }
+
     public DeliveryAgentService(DeliveryAgentRepository deliveryAgentRepository) {
         this.deliveryAgentRepository = deliveryAgentRepository;
     }

@@ -21,13 +21,16 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
         String redirectUrl = "/";
 
         for (GrantedAuthority authority : authorities) {
             String role = authority.getAuthority();
+
             if (role.equals("ROLE_ADMIN")) {
                 redirectUrl = "/admin/dashboard";
+                break;
+            } else if (role.equals("ROLE_AGENT")) {
+                redirectUrl = "/agent/dashboard"; // ✅ Added redirect for delivery agents
                 break;
             } else if (role.equals("ROLE_USER")) {
                 redirectUrl = "/user/dashboard";
