@@ -3,6 +3,7 @@ package com.vendora.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,13 +23,16 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private boolean active = true;
     private String name;
+
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
+
     private BigDecimal price;
     private int stock;
     private String imageUrl;
-    private String category;
-
+    private String category; 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

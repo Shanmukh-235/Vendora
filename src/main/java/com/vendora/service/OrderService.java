@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort; // ✅ REQUIRED import
 import org.springframework.stereotype.Service;
 
 import com.vendora.model.CartItem;
@@ -62,7 +63,8 @@ public class OrderService {
 
     // 🔍 Fetch all orders (Admin view)
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        // ✅ Show newest orders first (DESC by createdAt)
+        return orderRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     // 🔍 Fetch orders for a specific user (User dashboard)
@@ -119,5 +121,4 @@ public class OrderService {
                 .map(Order::getTotalAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 }

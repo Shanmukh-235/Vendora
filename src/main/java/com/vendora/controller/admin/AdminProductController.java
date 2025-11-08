@@ -27,21 +27,21 @@ public class AdminProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    // 🔹 View all products
+    //  View all products
     @GetMapping
     public String listProducts(Model model) {
         model.addAttribute("products", productRepository.findAll());
         return "admin/products";
     }
 
-    // 🔹 Show add product form
+    //  Show add product form
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
         return "admin/add-product";
     }
 
-    // 🔹 Save new product
+    //  Save new product
     @PostMapping("/add")
     public String addProduct(@ModelAttribute Product product,
                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
@@ -65,7 +65,7 @@ public class AdminProductController {
         return "redirect:/admin/products";
     }
 
-    // 🔹 Show edit form
+    //  Show edit form
     @GetMapping("/edit/{id}")
     public String editProduct(@PathVariable Long id, Model model) {
         Product product = productRepository.findById(id)
@@ -74,7 +74,7 @@ public class AdminProductController {
         return "admin/edit-product";
     }
 
-    // 🔹 Update product
+    //  Update product
     @PostMapping("/update")
     public String updateProduct(@ModelAttribute Product product,
                                 @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
@@ -99,7 +99,21 @@ public class AdminProductController {
         return "redirect:/admin/products";
     }
 
-    // 🔹 Delete product
+    // ✅ Toggle active/inactive product (or similar)
+    @GetMapping("/toggle/{id}")
+    public String toggleProductStatus(@PathVariable Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+
+        if (product != null) {
+            // Assuming your Product entity has a boolean field like `active`
+            product.setActive(!product.isActive());
+            productRepository.save(product);
+        }
+
+        return "redirect:/admin/products"; // or "redirect:/admin/products" if you want
+    }
+
+    //  Delete product
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productRepository.deleteById(id);

@@ -9,6 +9,7 @@ import com.vendora.model.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
     List<Product> findByActiveTrue();
     List<Product> findTop4ByOrderByIdDesc();
     List<Product> findByCategory(String category);
