@@ -4,26 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vendora | Orders</title>
+    <title>Vendora | My Orders</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-800">
-
-    <!-- ✅ Success Toast -->
-    <div x-data="{ show: false, message: '' }" x-init="
-         const msg = $el.getAttribute('data-message');
-         if (msg && msg.length > 0) {
-           message = msg;
-           show = true;
-           setTimeout(() => show = false, 3000);
-         }
-       " x-show="show" x-transition
-        class="fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium"
-        style="display: none;" th:attr="data-message=${success}">
-        <span x-text="message"></span>
-    </div>
 
     <!-- Sidebar -->
     <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
@@ -45,18 +31,18 @@
 
         <div class="p-6 border-t">
             <a href="/logout"
-                class="block text-center cursor-pointer bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
                 Logout
             </a>
         </div>
     </aside>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <main class="ml-64 min-h-screen">
 
         <!-- Header -->
         <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-            <h2 class="text-lg font-semibold text-gray-700">📦 Your Orders</h2>
+            <h2 class="text-lg font-semibold text-gray-700">📦 My Orders</h2>
             <div class="flex items-center space-x-4">
                 <span class="text-gray-700 text-sm">
                     Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
@@ -69,36 +55,64 @@
         <!-- Orders Section -->
         <section class="p-10">
             <div class="bg-white shadow-lg rounded-2xl p-8">
-                <h3 class="text-xl font-semibold mb-4">Recent Orders</h3>
 
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800">Your Recent Orders</h3>
+                    <a th:href="@{/shop}" class="text-blue-600 hover:underline text-sm">🛍️ Continue Shopping</a>
+                </div>
+
+                <!-- Empty State -->
                 <div th:if="${#lists.isEmpty(orders)}" class="text-center text-gray-500 italic">
                     You haven’t placed any orders yet.
                     <a th:href="@{/shop}" class="text-blue-600 hover:underline">Start shopping</a>!
                 </div>
 
+                <!-- Orders Table -->
                 <div th:unless="${#lists.isEmpty(orders)}">
-                    <table class="w-full border-collapse">
-                        <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
+                    <table class="w-full border-collapse text-sm">
+                        <thead class="bg-gray-100 text-gray-700 uppercase">
                             <tr>
                                 <th class="text-left py-3 px-4">Order ID</th>
                                 <th class="text-left py-3 px-4">Date</th>
                                 <th class="text-left py-3 px-4">Total</th>
                                 <th class="text-left py-3 px-4">Status</th>
+                                <th class="text-center py-3 px-4">Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr th:each="order : ${orders}" class="border-b hover:bg-gray-50 transition">
                                 <td class="py-3 px-4 font-medium text-gray-800" th:text="${order.id}">1</td>
                                 <td class="py-3 px-4 text-gray-600"
-                                    th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">06 Nov 2025
-                                </td>
-                                <td class="py-3 px-4 text-blue-600 font-medium">₹<span
+                                    th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">08 Nov 2025
+                                    11:45</td>
+                                <td class="py-3 px-4 text-blue-600 font-semibold">₹<span
                                         th:text="${order.totalAmount}">0.00</span></td>
+
+                                <!-- Status Badge -->
                                 <td class="py-3 px-4">
-                                    <span th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
-                          (order.status == 'PLACED' ? 'text-blue-600' : 'text-gray-600')" class="text-sm font-medium">
-                                        PLACED
+                                    <span th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-700 bg-green-50' :
+                            (order.status == 'PLACED' ? 'text-blue-700 bg-blue-50' :
+                            (order.status == 'CANCELLED' ? 'text-red-700 bg-red-50' : 'text-gray-600 bg-gray-100'))"
+                                        class="px-3 py-1 rounded-full text-xs font-medium shadow-sm">
                                     </span>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="py-3 px-4 text-center space-x-2">
+                                    <!-- View Details -->
+                                    <a th:href="@{'/user/orders/view/' + ${order.id}}"
+                                        class="inline-block bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 text-xs font-medium transition">
+                                        <i class="ri-eye-line"></i> View
+                                    </a>
+
+                                    <!-- Cancel Order (Only if PLACED) -->
+                                    <a th:if="${order.status == 'PLACED'}"
+                                        th:href="@{'/user/orders/cancel/' + ${order.id}}"
+                                        onclick="return confirm('Are you sure you want to cancel this order?')"
+                                        class="inline-block bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 text-xs font-medium transition">
+                                        <i class="ri-close-circle-line"></i> Cancel
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>

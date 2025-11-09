@@ -28,7 +28,9 @@ public class ProductService {
     return productRepository.findByCategory(category);
     }
 
-    
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
 
     // Get product by ID
     public Product findById(Long id) {

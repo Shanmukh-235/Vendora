@@ -36,6 +36,10 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    
+    @Autowired
+    private ProductService productService;
+
     /**
      * 🛒 Place an order for a user and update stock automatically
      */
@@ -146,29 +150,56 @@ public class OrderService {
     }
 
     @Transactional
-public boolean cancelOrder(Long orderId, User user) {
-    Order order = orderRepository.findById(orderId).orElse(null);
-    if (order == null || !order.getUser().equals(user)) {
-        return false;
-    }
-
-    if (!"PLACED".equalsIgnoreCase(order.getStatus())) {
-        return false; // Only pending orders can be canceled
-    }
-
-    // Restore product stock
-    List<OrderItem> items = orderItemRepository.findByOrder(order);
-    for (OrderItem item : items) {
-        Product product = item.getProduct();
-        if (product != null) {
-            product.setStock(product.getStock() + item.getQuantity());
+    public boolean cancelOrder(Long orderId, User user) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null || !order.getUser().equals(user)) {
+            return false;
         }
+
+        if (!"PLACED".equalsIgnoreCase(order.getStatus())) {
+            return false; // Only pending orders can be canceled
+        }
+
+        // Restore product stock
+        List<OrderItem> items = orderItemRepository.findByOrder(order);
+        for (OrderItem item : items) {
+            Product product = item.getProduct();
+            if (product != null) {
+                product.setStock(product.getStock() + item.getQuantity());
+            }
+        }
+
+        order.setStatus("CANCELED");
+        orderRepository.save(order);
+        return true;
     }
 
-    order.setStatus("CANCELED");
-    orderRepository.save(order);
-    return true;
-}
+    public List<OrderItem> getOrderItemsByOrder(Order order) {
+        return orderItemRepository.findByOrder(order);
+    }
+
+    @Transactional
+    public void cancelOrderAndRestoreStock(Order order) {
+        if (order == null)
+            return;
+
+        // restore stock for each product in the order
+        List<OrderItem> items = orderItemRepository.findByOrder(order);
+        for (OrderItem item : items) {
+            Product product = item.getProduct();
+            if (product != null) {
+                product.setStock(product.getStock() + item.getQuantity());
+                productService.saveProduct(product);
+            }
+        }
+
+        order.setStatus("CANCELLED");
+        orderRepository.save(order);
+    }
+
+    public void saveOrder(Order order) {
+        orderRepository.save(order);
+    }
 
 
 }

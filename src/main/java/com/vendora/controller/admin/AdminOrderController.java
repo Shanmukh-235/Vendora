@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.vendora.model.Order;
+import com.vendora.model.OrderItem;
 import com.vendora.model.DeliveryAgent;
 import com.vendora.repository.DeliveryAgentRepository;
 import com.vendora.service.OrderService;
@@ -28,12 +29,13 @@ public class AdminOrderController {
      * ✅ Show all orders with user + delivery agent info.
      */
     @GetMapping("/admin/orders")
-    public String listOrders(Model model) {
-        List<Order> orders = orderService.getAllOrders();
-        List<DeliveryAgent> agents = deliveryAgentRepository.findAll();
+    public String viewAllOrders(Model model) {
+        List<Order> orders = orderService.getAllOrders()
+                .stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())) // newest first
+                .toList();
 
         model.addAttribute("orders", orders);
-        model.addAttribute("agents", agents);
         return "admin/orders";
     }
 
@@ -42,7 +44,7 @@ public class AdminOrderController {
      */
     @PostMapping("/admin/orders/assign")
     public String assignDeliveryAgent(@RequestParam Long orderId,
-                                      @RequestParam Long agentId) {
+            @RequestParam Long agentId) {
         orderService.assignDeliveryAgent(orderId, agentId);
         return "redirect:/admin/orders";
     }
@@ -54,5 +56,21 @@ public class AdminOrderController {
     public String toggleOrderStatus(@PathVariable Long id) {
         orderService.toggleOrderStatus(id);
         return "redirect:/admin/orders";
+    }
+
+    @GetMapping("/admin/orders/view/{id}")
+    public String viewOrderDetails(@PathVariable Long id, Model model) {
+        Order order = orderService.getOrderById(id);
+        if (order == null) {
+            return "redirect:/admin/orders";
+        }
+
+        List<OrderItem> items = orderService.getOrderItemsByOrder(order);
+        List<DeliveryAgent> agents = deliveryAgentRepository.findAll(); // for assigning
+
+        model.addAttribute("order", order);
+        model.addAttribute("items", items);
+        model.addAttribute("agents", agents);
+        return "admin/order-details";
     }
 }

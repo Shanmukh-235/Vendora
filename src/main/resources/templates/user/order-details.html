@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendora | Order Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Sidebar -->
+    <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-center h-16 border-b">
+                <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/shop/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders"
+                    class="flex items-center gap-3 py-3 px-6 bg-orange-100 text-orange-700 font-medium rounded-r-full">📦
+                    Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+            </nav>
+        </div>
+        <div class="p-6 border-t">
+            <a href="/logout"
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="ml-64 min-h-screen p-10">
+        <div class="bg-white shadow-lg rounded-2xl p-8 max-w-5xl mx-auto border border-gray-100">
+
+            <!-- Header Section -->
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Order #<span th:text="${order.id}">1</span></h2>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="ri-calendar-line"></i>
+                        <span th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}">08 Nov 2025</span>
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        <i class="ri-map-pin-line"></i>
+                        <span th:text="${user.address != null ? user.address : 'No address provided'}">Chennai</span>
+                    </p>
+                </div>
+
+                <div class="text-right">
+                    <p class="text-sm text-gray-600 mb-1">Status:</p>
+                    <span th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'bg-green-50 text-green-700' :
+                          (order.status == 'PLACED' ? 'bg-blue-50 text-blue-700' :
+                          'bg-gray-100 text-gray-600')" class="text-sm font-semibold px-3 py-1 rounded-full shadow-sm">
+                        PLACED
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- Order Items Table -->
+            <table class="w-full border-collapse text-sm mb-6">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                    <tr>
+                        <th class="text-left py-3 px-4">Product</th>
+                        <th class="text-left py-3 px-4">Quantity</th>
+                        <th class="text-left py-3 px-4">Price</th>
+                        <th class="text-left py-3 px-4">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}" class="border-b hover:bg-gray-50 transition">
+                        <td class="py-3 px-4 text-gray-800" th:text="${item.product.name}">Product</td>
+                        <td class="py-3 px-4 text-gray-600" th:text="${item.quantity}">1</td>
+                        <td class="py-3 px-4 text-blue-700 font-medium">₹<span th:text="${item.price}">0.00</span></td>
+                        <td class="py-3 px-4 text-gray-800 font-semibold">
+                            ₹<span
+                                th:text="${item.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity.longValue()))}">
+                                0.00
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Total Summary -->
+            <div class="flex justify-between items-center border-t pt-4">
+                <div>
+                    <p class="text-sm text-gray-500">Payment Method</p>
+                    <p class="text-gray-800 font-medium">Cash on Delivery</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-500">Total Amount</p>
+                    <p class="text-xl font-bold text-blue-600">₹<span th:text="${order.totalAmount}">0.00</span></p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end mt-6 gap-3">
+                <a th:href="@{'/user/orders/invoice/' + ${order.id}}"
+                    class="bg-blue-50 text-blue-600 px-5 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium shadow-sm flex items-center gap-2">
+                    <i class="ri-file-download-line"></i> Download Invoice
+                </a>
+
+                <a th:if="${order.status == 'PLACED'}" th:href="@{'/user/orders/cancel/' + ${order.id}}"
+                    class="bg-red-50 text-red-600 px-5 py-2 rounded-lg hover:bg-red-100 text-sm font-medium shadow-sm flex items-center gap-2">
+                    <i class="ri-close-circle-line"></i> Cancel Order
+                </a>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>

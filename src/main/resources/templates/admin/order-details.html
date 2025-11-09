@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Vendora Admin | Order Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <main class="max-w-6xl mx-auto px-6 py-10">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-semibold text-indigo-600 flex items-center gap-2">
+                🧾 <span>Order Details</span>
+            </h1>
+            <a href="/admin/orders"
+                class="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center gap-1">
+                <i class="ri-arrow-left-line"></i> Back to Orders
+            </a>
+        </div>
+
+        <!-- Order Info -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-3">🧍 Customer Info</h2>
+                    <p><span class="font-medium text-gray-600">Name:</span> <span
+                            th:text="${order.user.name}">User</span></p>
+                    <p><span class="font-medium text-gray-600">Email:</span> <span
+                            th:text="${order.user.email}">user@mail.com</span></p>
+                    <p><span class="font-medium text-gray-600">Phone:</span> <span th:text="${order.user.phone}">+91
+                            00000</span></p>
+                    <p><span class="font-medium text-gray-600">Address:</span>
+                        <span th:text="${order.user.address != null ? order.user.address : 'Not Provided'}"></span>
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-3">📦 Order Summary</h2>
+                    <p><span class="font-medium text-gray-600">Order ID:</span> <span th:text="${order.id}">#1</span>
+                    </p>
+                    <p><span class="font-medium text-gray-600">Date:</span>
+                        <span th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">06 Nov 2025</span>
+                    </p>
+                    <p><span class="font-medium text-gray-600">Total:</span> ₹<span
+                            th:text="${order.totalAmount}">0.00</span></p>
+                    <p><span class="font-medium text-gray-600">Status:</span>
+                        <span th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'bg-green-100 text-green-700' :
+                                  (order.status == 'PLACED' ? 'bg-blue-100 text-blue-700' :
+                                  (order.status == 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                  'bg-gray-100 text-gray-600'))"
+                            class="px-3 py-1 rounded-full text-xs font-semibold ml-2">
+                        </span>
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Items Table -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">🛍️ Ordered Items</h2>
+
+            <div th:if="${#lists.isEmpty(items)}" class="text-gray-500 italic">
+                No items found for this order.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(items)}">
+                <table class="w-full text-sm border-collapse">
+                    <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Product</th>
+                            <th class="py-3 px-4 text-left">Qty</th>
+                            <th class="py-3 px-4 text-left">Price</th>
+                            <th class="py-3 px-4 text-left">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}" class="border-b hover:bg-gray-50 transition">
+                            <td class="py-3 px-4 font-medium text-gray-900" th:text="${item.product.name}">Product Name
+                            </td>
+                            <td class="py-3 px-4" th:text="${item.quantity}">1</td>
+                            <td class="py-3 px-4 text-gray-700">₹<span th:text="${item.price}">0.00</span></td>
+                            <td class="py-3 px-4 text-gray-900 font-semibold">
+                                ₹<span
+                                    th:text="${item.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity.doubleValue()))}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-right font-semibold text-gray-800">
+                Total: ₹<span th:text="${order.totalAmount}">0.00</span>
+            </div>
+        </section>
+
+        <!-- Admin Actions -->
+        
+    </main>
+</body>
+
+</html>
