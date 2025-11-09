@@ -8,16 +8,20 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-800">
 
     <!-- ✅ Toast Notification -->
-    <div x-data="{ show: false, message: '' }" x-init="const msg = $el.getAttribute('data-message');
-                 if (msg && msg.length > 0) { message = msg; show = true; setTimeout(() => show = false, 3000); }"
-        x-show="show" x-transition
-        class="fixed top-5 right-5 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-50"
-        style="display: none;" th:attr="data-message=${success}">
+    <div x-data="{ show: false, message: '', type: '' }" x-init="
+         const msg = $el.getAttribute('data-message');
+         const typeMsg = $el.getAttribute('data-type');
+         if (msg && msg.length > 0) { message = msg; type = typeMsg; show = true; setTimeout(() => show = false, 3000); }
+       " x-show="show" x-transition :class="type === 'success' ? 'bg-green-600' : 'bg-red-600'"
+        class="fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-50"
+        style="display: none;"
+        th:attr="data-message=${success != null ? success : error}, data-type=${success != null ? 'success' : 'error'}">
         <span x-text="message"></span>
     </div>
 
@@ -40,12 +44,15 @@
         </div>
         <div class="p-6 border-t">
             <a href="/logout"
-                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">Logout</a>
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
         </div>
     </aside>
 
     <!-- Main Content -->
     <main class="ml-64 min-h-screen">
+
         <!-- Top Navbar -->
         <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
             <div>
@@ -64,7 +71,7 @@
         <!-- Dashboard Content -->
         <div class="p-8">
 
-            <!-- Plain Welcome Text -->
+            <!-- Welcome -->
             <section class="mb-8">
                 <h2 class="text-3xl font-semibold text-gray-900">
                     Welcome back, <span th:text="${user.name}">User</span> 👋
@@ -73,43 +80,59 @@
             </section>
 
             <!-- Stats Overview -->
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Stats Overview -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+
+                <!-- Total Orders -->
                 <div
-                    class="flex items-center justify-between bg-white shadow-sm rounded-xl p-6 border hover:shadow-md transition">
-                    <div>
-                        <h3 class="text-gray-500 text-sm mb-1">Total Orders</h3>
-                        <p class="text-3xl font-bold text-blue-600" th:text="${orderCount}">0</p>
-                    </div>
-                    <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">
-                        <i class="fa-solid fa-box text-2xl"></i>
+                    class="group relative bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-600 text-sm font-medium mb-1">Total Orders</h3>
+                            <p class="text-4xl font-extrabold text-blue-700 tracking-tight" th:text="${orderCount}">0
+                            </p>
+                        </div>
+                        <div class="bg-blue-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
+                            <i class="ri-shopping-bag-3-fill text-2xl"></i>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Wishlist Items -->
                 <div
-                    class="flex items-center justify-between bg-white shadow-sm rounded-xl p-6 border hover:shadow-md transition">
-                    <div>
-                        <h3 class="text-gray-500 text-sm mb-1">Wishlist Items</h3>
-                        <p class="text-3xl font-bold text-pink-600" th:text="${wishlistCount}">0</p>
-                    </div>
-                    <div class="bg-pink-100 text-pink-600 p-3 rounded-lg">
-                        <i class="fa-solid fa-heart text-2xl"></i>
+                    class="group relative bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl border border-pink-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-600 text-sm font-medium mb-1">Wishlist Items</h3>
+                            <p class="text-4xl font-extrabold text-pink-700 tracking-tight" th:text="${wishlistCount}">0
+                            </p>
+                        </div>
+                        <div class="bg-pink-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
+                            <i class="ri-heart-3-fill text-2xl"></i>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Cart Items -->
                 <div
-                    class="flex items-center justify-between bg-white shadow-sm rounded-xl p-6 border hover:shadow-md transition">
-                    <div>
-                        <h3 class="text-gray-500 text-sm mb-1">Cart Items</h3>
-                        <p class="text-3xl font-bold text-green-600" th:text="${cartCount}">0</p>
-                    </div>
-                    <div class="bg-green-100 text-green-600 p-3 rounded-lg">
-                        <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                    class="group relative bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-600 text-sm font-medium mb-1">Cart Items</h3>
+                            <p class="text-4xl font-extrabold text-green-700 tracking-tight" th:text="${cartCount}">0
+                            </p>
+                        </div>
+                        <div class="bg-green-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
+                            <i class="ri-shopping-cart-2-fill text-2xl"></i>
+                        </div>
                     </div>
                 </div>
+
             </section>
 
-            <!-- Recent Activity & Quick Links -->
+            <!-- Recent Orders + Quick Actions -->
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+
                 <!-- Recent Orders -->
                 <div class="bg-white shadow rounded-2xl p-6">
                     <div class="flex justify-between items-center mb-4">
@@ -126,21 +149,36 @@
 
                     <div th:unless="${#lists.isEmpty(orders)}">
                         <ul class="divide-y divide-gray-100">
-                            <li th:each="order, iterStat : ${orders}" th:if="${iterStat.index < 2}"
-                                class="py-3 flex justify-between items-center">
+                            <li th:each="order, iterStat : ${orders}" th:if="${iterStat.index < 3}"
+                                class="py-3 flex justify-between items-center"
+                                th:classappend="${order.status == 'CANCELED'} ? 'opacity-60 line-through' : ''">
+
                                 <div>
                                     <p class="font-medium text-gray-800" th:text="'Order #' + ${order.id}">#001</p>
                                     <p class="text-sm text-gray-500"
-                                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">
-                                        2025-10-20 10:30
-                                    </p>
+                                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">2025-11-08
+                                        12:00</p>
                                 </div>
-                                <span class="text-sm font-medium" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
-                              (order.status == 'PLACED' ? 'text-blue-600' : 'text-gray-600')"
-                                    th:text="${order.status}">Delivered</span>
+
+                                <div class="flex items-center gap-3">
+                                    <!-- Status -->
+                                    <span class="text-sm font-medium" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
+                          (order.status == 'PLACED' ? 'text-blue-600' :
+                          (order.status == 'CANCELED' ? 'text-red-600' : 'text-gray-600'))"
+                                        th:text="${order.status}">PLACED</span>
+
+                                    <!-- ✅ Cancel Button -->
+                                    <form th:if="${order.status == 'PLACED'}"
+                                        th:action="@{'/user/orders/cancel/' + ${order.id}}" method="post"
+                                        onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                        <button type="submit"
+                                            class="bg-red-50 text-red-600 px-3 py-1 rounded-lg text-xs font-medium hover:bg-red-100 transition">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         </ul>
-
                     </div>
                 </div>
 

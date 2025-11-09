@@ -18,24 +18,22 @@
                 <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
             </div>
             <nav class="mt-6 space-y-1">
-                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠
-                    <span>Dashboard</span></a>
+                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
                 <a href="/shop"
                     class="flex items-center gap-3 py-3 px-6 bg-green-100 text-green-700 font-medium rounded-r-full">🛍️
-                    <span>Shop</span></a>
-                <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 <span>Cart</span></a>
-                <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦
-                    <span>Orders</span></a>
-                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️
-                    <span>Wishlist</span></a>
-                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️
-                    <span>Settings</span></a>
+                    Shop</a>
+                <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
             </nav>
         </div>
 
         <div class="p-6 border-t">
             <a href="/logout"
-                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">Logout</a>
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
         </div>
     </aside>
 
@@ -44,24 +42,26 @@
 
         <!-- Top Navbar -->
         <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <form th:action="@{/shop}" method="get" class="flex space-x-2">
+                <input type="text" name="search" placeholder="Search products..."
+                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100 w-64">
+                <button type="submit"
+                    class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                    Search
+                </button>
+            </form>
+
             <div class="flex items-center space-x-4">
-                <form th:action="@{/shop}" method="get" class="flex space-x-2">
-                    <input type="text" name="search" placeholder="Search products..."
-                        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100 w-64">
-                    <button type="submit"
-                        class="block text-center bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">Search</button>
-                </form>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-700 text-sm">Hello, <span th:if="${user != null}"
-                        th:text="${user.name}">Guest</span></span>
+                <span class="text-gray-700 text-sm">
+                    Hello, <span th:if="${user != null}" th:text="${user.name}">Guest</span>
+                </span>
                 <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
                     alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
             </div>
         </header>
 
-        <!-- Shop Content -->
-        <div class="p-8">
+        <!-- Shop Section -->
+        <section class="p-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6">🛍️ Explore Our Products</h2>
 
             <!-- Filters -->
@@ -81,42 +81,70 @@
                 </select>
 
                 <button type="submit"
-                    class="block text-center bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">Apply</button>
+                    class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                    Apply
+                </button>
             </form>
 
             <!-- Product Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <div th:each="product : ${products}"
                     class="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition">
+
                     <img th:src="${product.imageUrl}" alt="Product Image" class="w-full h-48 object-cover">
+
                     <div class="p-4">
                         <h3 class="text-sm font-semibold text-gray-800 mb-1" th:text="${product.name}">Product Name</h3>
                         <p class="text-gray-500 text-sm mb-2" th:text="${product.category}">Category</p>
                         <p class="text-blue-600 font-semibold text-sm mb-3" th:text="'₹' + ${product.price}">₹0.00</p>
 
+                        <!-- Stock Indicator -->
+                        <div class="mb-4">
+                            <span th:if="${product.stock == 0}"
+                                class="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                Out of Stock
+                            </span>
+
+                            <span th:if="${product.stock > 0 and product.stock <= 5}"
+                                class="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                Low Stock (Only <span th:text="${product.stock}"></span> left)
+                            </span>
+
+                            <span th:if="${product.stock > 5}"
+                                class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                In Stock
+                            </span>
+                        </div>
+
+                        <!-- Buttons -->
                         <div class="flex justify-between items-center">
                             <a th:href="@{'/shop/product/' + ${product.id}}"
-                                class="text-sm text-blue-600 hover:underline">View
-                                Details</a>
-                            <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post">
+                                class="text-sm text-blue-600 hover:underline">View Details</a>
+
+                            <!-- Add to Cart -->
+                            <form th:if="${product.stock > 0}" th:action="@{/cart/add/{id}(id=${product.id})}"
+                                method="post">
                                 <button type="submit"
-                                    class="block text-center bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium">
+                                    class="bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium transition">
                                     <i class="ri-shopping-basket-line"></i> Add to Cart
                                 </button>
                             </form>
 
-
+                            <!-- Out of Stock Disabled Button -->
+                            <button th:if="${product.stock == 0}"
+                                class="bg-gray-100 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed">
+                                <i class="ri-close-circle-line"></i> Out of Stock
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-            <!-- No Products -->
+            <!-- No Products Message -->
             <div th:if="${#lists.isEmpty(products)}" class="text-center py-16 text-gray-500 italic">
                 No products found. Try adjusting filters.
             </div>
-        </div>
+        </section>
     </main>
 </body>
 

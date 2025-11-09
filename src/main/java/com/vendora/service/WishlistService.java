@@ -18,6 +18,10 @@ public class WishlistService {
     @Autowired
     private WishlistRepository wishlistRepository;
 
+    public List<Wishlist> getWishlistItemsByUser(User user) {
+        return wishlistRepository.findByUser(user);
+    }
+
     @Transactional
     public void addToWishlist(User user, Product product) {
         try {
@@ -49,4 +53,10 @@ public class WishlistService {
     public boolean isInWishlist(User user, Product product) {
         return wishlistRepository.existsByUserAndProduct(user, product);
     }
+
+    public int getWishlistItemsCount(User user) {
+        if (user == null) return 0;
+        return getWishlistItemsByUser(user).size();
+    }
+
 }

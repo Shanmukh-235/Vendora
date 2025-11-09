@@ -16,8 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.vendora.model.Order;
 import com.vendora.model.User;
+import com.vendora.service.CartService;
 import com.vendora.service.OrderService;
 import com.vendora.service.UserService;
+import com.vendora.service.WishlistService;
 
 @Controller
 public class UserController {
@@ -29,28 +31,39 @@ public class UserController {
     private OrderService orderService;
 
     @Autowired
+    private WishlistService wishlistService;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     // ---------------- DASHBOARD ----------------
+    // ---------------- DASHBOARD ----------------
     @GetMapping("/user/dashboard")
-    public String userDashboard(Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findByEmail(email).orElse(null);
+    public String dashboard(Model model, Principal principal) {
+        User user = userService.findByEmail(principal.getName()).orElse(null);
         if (user == null) {
-            return "redirect:/login?error";
+            return "redirect:/login";
         }
 
-        // ✅ Fetch and sort recent orders (newest first, limit to 2)
-        List<Order> recentOrders = orderService.getOrdersByUser(user).stream()
-                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt())) // descending order
-                .limit(2)
+        // ✅ Get stats
+        long orderCount = orderService.countOrdersByUser(user);
+        int wishlistCount = wishlistService.getWishlistItemsCount(user);
+        int cartCount = cartService.getCartItemsCount(user);
+
+        // ✅ Fetch only the most recent order (1)
+        List<Order> orders = orderService.getOrdersByUser(user).stream()
+                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt())) // newest first
+                .limit(1)
                 .toList();
 
         model.addAttribute("user", user);
-        model.addAttribute("orderCount", orderService.countOrdersByUser(user));
-        model.addAttribute("wishlistCount", 2); // TODO: Replace with wishlistService.countByUser(user)
-        model.addAttribute("cartCount", 3); // TODO: Replace with cartService.countByUser(user)
-        model.addAttribute("orders", recentOrders);
+        model.addAttribute("orderCount", orderCount);
+        model.addAttribute("wishlistCount", wishlistCount);
+        model.addAttribute("cartCount", cartCount);
+        model.addAttribute("orders", orders);
 
         return "user/dashboard";
     }
@@ -58,25 +71,23 @@ public class UserController {
     // ---------------- ORDERS ----------------
     @GetMapping("/user/orders")
     public String viewOrders(Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findByEmail(email).orElse(null);
+        User user = userService.findByEmail(principal.getName()).orElse(null);
         if (user == null) {
-            return "redirect:/login?error";
+            return "redirect:/login";
         }
 
         List<Order> orders = orderService.getOrdersByUser(user);
         model.addAttribute("user", user);
         model.addAttribute("orders", orders);
-        return "user/orders"; // ✅ templates/user/orders.html
+        return "user/orders";
     }
 
     // ---------------- SETTINGS ----------------
     @GetMapping("/user/settings")
     public String userSettings(Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findByEmail(email).orElse(null);
+        User user = userService.findByEmail(principal.getName()).orElse(null);
         if (user == null) {
-            return "redirect:/login?error";
+            return "redirect:/login";
         }
 
         model.addAttribute("user", user);
@@ -94,18 +105,16 @@ public class UserController {
             Principal principal,
             RedirectAttributes redirectAttributes) {
 
-        String email = principal.getName();
-        User user = userService.findByEmail(email).orElse(null);
+        User user = userService.findByEmail(principal.getName()).orElse(null);
         if (user == null) {
-            return "redirect:/login?error";
+            return "redirect:/login";
         }
 
-        // Update basic info
         user.setName(name);
         user.setPhone(phone);
         user.setAddress(address);
 
-        // Handle password change
+        // Password update
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.equals(confirmPassword)) {
                 user.setPassword(passwordEncoder.encode(newPassword));
@@ -115,7 +124,7 @@ public class UserController {
             }
         }
 
-        // Handle profile image upload
+        // Profile image
         if (profileImage != null && !profileImage.isEmpty()) {
             try {
                 String uploadDir = "uploads/profiles/";
@@ -123,6 +132,7 @@ public class UserController {
                 if (!java.nio.file.Files.exists(uploadPath)) {
                     java.nio.file.Files.createDirectories(uploadPath);
                 }
+
                 String fileName = user.getId() + "_" + profileImage.getOriginalFilename();
                 java.nio.file.Path filePath = uploadPath.resolve(fileName);
                 java.nio.file.Files.write(filePath, profileImage.getBytes());

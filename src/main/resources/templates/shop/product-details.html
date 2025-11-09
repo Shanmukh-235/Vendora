@@ -55,7 +55,7 @@
             </div>
         </header>
 
-        <!-- Product Section (no box) -->
+        <!-- Product Section -->
         <section class="px-10 py-12">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
 
@@ -76,17 +76,30 @@
                         ₹<span th:text="${product.price}">0.00</span>
                     </p>
 
-                    <p class="text-gray-500 mb-6 text-sm">
-                        Stock available:
-                        <span class="font-medium text-gray-800" th:text="${product.stock}">0</span>
-                    </p>
+                    <!-- ✅ Stock Badge -->
+                    <div class="mb-6">
+                        <span th:if="${product.stock == 0}"
+                            class="bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">
+                            Out of Stock
+                        </span>
+
+                        <span th:if="${product.stock > 0 and product.stock <= 5}"
+                            class="bg-amber-100 text-amber-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">
+                            Low Stock (Only <span th:text="${product.stock}"></span> left)
+                        </span>
+
+                        <span th:if="${product.stock > 5}"
+                            class="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">
+                            In Stock
+                        </span>
+                    </div>
 
                     <!-- Buttons -->
                     <div class="flex flex-wrap gap-4 mt-8">
 
-                        <!-- Add to Cart -->
-                        <form th:action="@{/shop/action/cart/add/{id}(id=${product.id})}" method="post"
-                            class="flex items-center gap-3">
+                        <!-- ✅ Add to Cart -->
+                        <form th:if="${product.stock > 0}" th:action="@{/shop/action/cart/add/{id}(id=${product.id})}"
+                            method="post" class="flex items-center gap-3">
                             <input type="number" name="quantity" min="1" value="1"
                                 class="border border-gray-300 rounded-lg w-20 px-2 py-2 text-center focus:ring-2 focus:ring-blue-400 focus:outline-none" />
                             <button type="submit"
@@ -95,14 +108,21 @@
                             </button>
                         </form>
 
+                        <!-- 🚫 Disabled Add to Cart -->
+                        <button th:if="${product.stock == 0}"
+                            class="bg-gray-100 text-gray-400 px-5 py-3 rounded-lg text-sm font-medium cursor-not-allowed shadow-sm">
+                            <i class="ri-close-circle-line"></i> Out of Stock
+                        </button>
+
                         <!-- Wishlist -->
                         <a th:href="@{'/shop/wishlist/add/' + ${product.id}}"
                             class="bg-pink-50 text-pink-700 px-5 py-3 rounded-lg hover:bg-pink-100 text-sm font-medium shadow-sm transition">
                             <i class="ri-heart-fill"></i> Wishlist
                         </a>
 
-                        <!-- Buy Now -->
-                        <form th:action="@{/shop/action/buy-now/{id}(id=${product.id})}" method="post">
+                        <!-- ✅ Buy Now -->
+                        <form th:if="${product.stock > 0}" th:action="@{/shop/action/buy-now/{id}(id=${product.id})}"
+                            method="post">
                             <button type="submit"
                                 class="bg-orange-50 text-orange-700 px-5 py-3 rounded-lg hover:bg-orange-100 text-sm font-medium shadow-sm transition">
                                 <i class="ri-flashlight-fill"></i> Buy Now
@@ -137,7 +157,6 @@
                 </div>
             </div>
         </section>
-
     </main>
 </body>
 

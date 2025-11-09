@@ -1,7 +1,11 @@
 package com.vendora.service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
@@ -43,6 +47,10 @@ public class CartService {
     /** 🧾 Get current cart items (unmodifiable copy) */
     public Map<Long, Integer> getCartItems() {
         return Collections.unmodifiableMap(new LinkedHashMap<>(cartItems));
+    }
+
+    public int getCartItemsCount(User user) {
+        return cartItems.size();
     }
 
     /** 💰 Calculate total price */
