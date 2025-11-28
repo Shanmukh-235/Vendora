@@ -5,15 +5,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vendora | Dashboard</title>
+
+    <!-- Icons + Tailwind + Alpine -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-50 font-sans text-gray-800" x-data="{ sidebarOpen: false }">
 
-    <!-- ✅ Toast Notification -->
+    <!-- Toast Notification -->
     <div x-data="{ show: false, message: '', type: '' }" x-init="
          const msg = $el.getAttribute('data-message');
          const typeMsg = $el.getAttribute('data-type');
@@ -26,42 +28,57 @@
     </div>
 
     <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
-        <div>
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300
+              flex flex-col justify-between
+              -translate-x-full lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : ''">
+
+        <div class="flex-grow flex flex-col">
             <div class="flex items-center justify-center h-16 border-b">
                 <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
             </div>
-            <nav class="mt-6 space-y-1">
+
+            <nav class="mt-6 space-y-1 flex-grow">
                 <a href="/user/dashboard"
-                    class="flex items-center gap-3 py-3 px-6 bg-blue-100 text-blue-700 font-medium rounded-r-full">🏠
+                    class="flex items-center gap-3 px-6 py-3 text-blue-700 font-medium bg-blue-100 rounded-r-full">🏠
                     Dashboard</a>
-                <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
-                <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
-                <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
-                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
-                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+                <a href="/shop" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/cart" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">⚙️ Settings</a>
             </nav>
         </div>
+
         <div class="p-6 border-t">
             <a href="/logout"
-                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                class="block text-center text-red-600 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
                 Logout
             </a>
         </div>
     </aside>
 
+
+    <!-- Background overlay on mobile -->
+    <div class="fixed inset-0 bg-black/40 z-30 lg:hidden" x-show="sidebarOpen" @click="sidebarOpen = false"
+        x-transition.opacity style="display:none;">
+    </div>
+
     <!-- Main Content -->
-    <main class="ml-64 min-h-screen">
+    <main class="lg:ml-64 min-h-screen">
 
         <!-- Top Navbar -->
-        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-            <div>
-                <input type="text" placeholder="Search..."
-                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100 w-64">
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-700 text-sm">
-                    Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
+        <header class="bg-white shadow-sm px-4 sm:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+            <!-- Hamburger -->
+            <button class="lg:hidden text-2xl text-gray-600" @click="sidebarOpen = !sidebarOpen">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            <input type="text" placeholder="Search..."
+                class="hidden sm:block w-40 sm:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-blue-100 focus:ring">
+
+            <div class="flex items-center gap-4">
+                <span class="text-gray-700 text-sm hidden sm:block">Hello,
+                    <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
                 </span>
                 <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
                     alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
@@ -69,140 +86,108 @@
         </header>
 
         <!-- Dashboard Content -->
-        <div class="p-8">
+        <div class="p-4 sm:p-8">
 
             <!-- Welcome -->
             <section class="mb-8">
-                <h2 class="text-3xl font-semibold text-gray-900">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-gray-900">
                     Welcome back, <span th:text="${user.name}">User</span> 👋
                 </h2>
                 <p class="text-gray-600 mt-1 text-sm">Here’s what’s happening with your account today.</p>
             </section>
 
-            <!-- Stats Overview -->
-            <!-- Stats Overview -->
-            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-
+            <!-- Stats -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Total Orders -->
                 <div
-                    class="group relative bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-gray-600 text-sm font-medium mb-1">Total Orders</h3>
-                            <p class="text-4xl font-extrabold text-blue-700 tracking-tight" th:text="${orderCount}">0
-                            </p>
-                        </div>
-                        <div class="bg-blue-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
-                            <i class="ri-shopping-bag-3-fill text-2xl"></i>
-                        </div>
-                    </div>
+                    class="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow hover:shadow-lg transition duration-300">
+                    <h3 class="text-gray-600 text-sm">Total Orders</h3>
+                    <p class="text-4xl font-extrabold text-blue-700" th:text="${orderCount}">0</p>
                 </div>
-
-                <!-- Wishlist Items -->
+                <!-- Wishlist -->
                 <div
-                    class="group relative bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl border border-pink-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-gray-600 text-sm font-medium mb-1">Wishlist Items</h3>
-                            <p class="text-4xl font-extrabold text-pink-700 tracking-tight" th:text="${wishlistCount}">0
-                            </p>
-                        </div>
-                        <div class="bg-pink-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
-                            <i class="ri-heart-3-fill text-2xl"></i>
-                        </div>
-                    </div>
+                    class="bg-pink-50 p-6 rounded-xl border border-pink-100 shadow hover:shadow-lg transition duration-300">
+                    <h3 class="text-gray-600 text-sm">Wishlist Items</h3>
+                    <p class="text-4xl font-extrabold text-pink-700" th:text="${wishlistCount}">0</p>
                 </div>
-
-                <!-- Cart Items -->
+                <!-- Cart -->
                 <div
-                    class="group relative bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-100 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 duration-300">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-gray-600 text-sm font-medium mb-1">Cart Items</h3>
-                            <p class="text-4xl font-extrabold text-green-700 tracking-tight" th:text="${cartCount}">0
-                            </p>
-                        </div>
-                        <div class="bg-green-600 text-white p-4 rounded-xl shadow-md group-hover:scale-105 transition">
-                            <i class="ri-shopping-cart-2-fill text-2xl"></i>
-                        </div>
-                    </div>
+                    class="bg-green-50 p-6 rounded-xl border border-green-100 shadow hover:shadow-lg transition duration-300">
+                    <h3 class="text-gray-600 text-sm">Cart Items</h3>
+                    <p class="text-4xl font-extrabold text-green-700" th:text="${cartCount}">0</p>
                 </div>
-
             </section>
 
             <!-- Recent Orders + Quick Actions -->
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
 
                 <!-- Recent Orders -->
-                <div class="bg-white shadow rounded-2xl p-6">
+                <div class="bg-white shadow rounded-xl p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
                         <a href="/user/orders"
-                            class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                            class="text-blue-600 bg-blue-50 px-3 py-1 rounded-md text-sm hover:bg-blue-100">
                             View All
                         </a>
                     </div>
 
                     <div th:if="${#lists.isEmpty(orders)}">
-                        <p class="text-gray-500 italic text-center py-6">No recent orders found.</p>
+                        <p class="text-gray-500 text-center italic py-6">No recent orders.</p>
                     </div>
 
-                    <div th:unless="${#lists.isEmpty(orders)}">
-                        <ul class="divide-y divide-gray-100">
-                            <li th:each="order, iterStat : ${orders}" th:if="${iterStat.index < 3}"
-                                class="py-3 flex justify-between items-center"
-                                th:classappend="${order.status == 'CANCELED'} ? 'opacity-60 line-through' : ''">
+                    <ul th:unless="${#lists.isEmpty(orders)}" class="divide-y divide-gray-100">
+                        <li th:each="order, iterStat : ${orders}" th:if="${iterStat.index < 3}"
+                            class="py-3 flex justify-between items-center"
+                            th:classappend="${order.status == 'CANCELED'} ? 'opacity-60 line-through' : ''">
 
-                                <div>
-                                    <p class="font-medium text-gray-800" th:text="'Order #' + ${order.id}">#001</p>
-                                    <p class="text-sm text-gray-500"
-                                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">2025-11-08
-                                        12:00</p>
-                                </div>
+                            <div>
+                                <p class="font-medium text-gray-900" th:text="'Order #' + ${order.id}">#001</p>
+                                <p class="text-sm text-gray-500"
+                                    th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}">Date</p>
+                            </div>
 
-                                <div class="flex items-center gap-3">
-                                    <!-- Status -->
-                                    <span class="text-sm font-medium" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
-                          (order.status == 'PLACED' ? 'text-blue-600' :
-                          (order.status == 'CANCELED' ? 'text-red-600' : 'text-gray-600'))"
-                                        th:text="${order.status}">PLACED</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-medium" th:text="${order.status}" th:classappend="${order.status == 'DELIVERED'} ? 'text-green-600' :
+                                                    (order.status == 'PLACED' ? 'text-blue-600' :
+                                                    (order.status == 'CANCELED' ? 'text-red-600' : 'text-gray-600'))">
+                                </span>
 
-                                    <!-- ✅ Cancel Button -->
-                                    <form th:if="${order.status == 'PLACED'}"
-                                        th:action="@{'/user/orders/cancel/' + ${order.id}}" method="post"
-                                        onsubmit="return confirm('Are you sure you want to cancel this order?');">
-                                        <button type="submit"
-                                            class="bg-red-50 text-red-600 px-3 py-1 rounded-lg text-xs font-medium hover:bg-red-100 transition">
-                                            Cancel
-                                        </button>
-                                    </form>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                                <form th:if="${order.status == 'PLACED'}"
+                                    th:action="@{'/user/orders/cancel/' + ${order.id}}" method="post"
+                                    onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                    <button type="submit"
+                                        class="text-xs px-3 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100">
+                                        Cancel
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="bg-white shadow rounded-2xl p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white shadow rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm font-medium">
                         <a href="/shop"
-                            class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-3 rounded-lg hover:bg-blue-100 text-sm font-medium text-center shadow-sm">🛍️
-                            Go to Shop</a>
+                            class="px-4 py-3 text-center bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100">🛍️
+                            Shop</a>
                         <a href="/cart"
-                            class="cursor-pointer bg-green-50 text-green-600 px-4 py-3 rounded-lg hover:bg-green-100 text-sm font-medium text-center shadow-sm">🛒
-                            View Cart</a>
+                            class="px-4 py-3 text-center bg-green-50 text-green-600 rounded-md hover:bg-green-100">🛒
+                            Cart</a>
                         <a href="/user/orders"
-                            class="cursor-pointer bg-purple-50 text-purple-600 px-4 py-3 rounded-lg hover:bg-purple-100 text-sm font-medium text-center shadow-sm">📦
-                            Track Orders</a>
+                            class="px-4 py-3 text-center bg-purple-50 text-purple-600 rounded-md hover:bg-purple-100">📦
+                            Orders</a>
                         <a href="/shop/wishlist"
-                            class="cursor-pointer bg-pink-50 text-pink-600 px-4 py-3 rounded-lg hover:bg-pink-100 text-sm font-medium text-center shadow-sm">❤️
-                            View Wishlist</a>
+                            class="px-4 py-3 text-center bg-pink-50 text-pink-600 rounded-md hover:bg-pink-100">❤️
+                            Wishlist</a>
                     </div>
                 </div>
             </section>
+
         </div>
     </main>
+
 </body>
 
 </html>

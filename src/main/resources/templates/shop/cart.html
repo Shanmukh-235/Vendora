@@ -6,63 +6,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vendora | Your Cart</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-50 font-sans text-gray-800" x-data="{ sidebarOpen: false }">
 
   <!-- Sidebar -->
-  <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
-    <div>
+  <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300
+                flex flex-col justify-between
+                -translate-x-full lg:translate-x-0"
+         :class="sidebarOpen ? 'translate-x-0' : ''">
+
+    <div class="flex-grow flex flex-col">
       <div class="flex items-center justify-center h-16 border-b">
-        <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
+        <h1 class="text-xl font-bold text-purple-600">Vendora</h1>
       </div>
-      <nav class="mt-6 space-y-1">
-        <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠
-          <span>Dashboard</span></a>
-        <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ <span>Shop</span></a>
-        <a href="/cart"
-          class="flex items-center gap-3 py-3 px-6 bg-purple-100 text-purple-700 font-medium rounded-r-full">🛒
-          <span>Cart</span></a>
-        <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 <span>Orders</span></a>
-        <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ <span>Wishlist</span></a>
-        <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ <span>Settings</span></a>
+
+      <nav class="mt-6 space-y-1 flex-grow">
+        <a href="/user/dashboard" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🏠 Dashboard</a>
+        <a href="/shop" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🛍️ Shop</a>
+        <a href="/cart" class="flex items-center gap-3 px-6 py-3 bg-purple-100 text-purple-700 font-medium rounded-r-full">🛒 Cart</a>
+        <a href="/user/orders" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">📦 Orders</a>
+        <a href="/shop/wishlist" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">❤️ Wishlist</a>
+        <a href="/user/settings" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">⚙️ Settings</a>
       </nav>
     </div>
 
     <div class="p-6 border-t">
       <a href="/logout"
-        class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+         class="block text-center text-red-600 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
         Logout
       </a>
     </div>
   </aside>
 
+  <!-- Mobile backdrop -->
+  <div class="fixed inset-0 bg-black/40 z-30 lg:hidden"
+       x-show="sidebarOpen"
+       @click="sidebarOpen = false"
+       x-transition.opacity
+       style="display:none;">
+  </div>
+
   <!-- Main Content -->
-  <main class="ml-64 min-h-screen">
+  <main class="ml-0 lg:ml-64 min-h-screen transition-all">
 
-    <!-- Top Navbar -->
-    <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-      <h2 class="text-xl font-semibold text-gray-700">🛒 Your Shopping Cart</h2>
-      <div class="flex items-center space-x-4">
-        <span class="text-gray-700 text-sm">Hello, <span th:if="${user != null}"
-            th:text="${user.name}">Guest</span></span>
-        <img th:src="${#ctx.containsVariable('user') and user != null and user.profileImage != null 
-                    ? user.profileImage 
-                    : '/images/default-avatar.png'}" alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm px-4 sm:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+      <!-- Hamburger -->
+      <button class="lg:hidden text-2xl text-gray-600"
+              @click="sidebarOpen = !sidebarOpen">
+        <i class="ri-menu-line"></i>
+      </button>
 
+      <h2 class="text-lg sm:text-xl font-semibold text-gray-700">🛒 Your Shopping Cart</h2>
+
+      <div class="flex items-center gap-3">
+        <span class="text-gray-700 text-sm hidden sm:block">
+          Hello, <span th:text="${user == null ? 'Guest' : user.name}"></span>
+        </span>
+        <img th:src="${user != null && user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+             alt="Avatar"
+             class="w-10 h-10 rounded-full border object-cover">
       </div>
     </header>
 
     <!-- Cart Content -->
-    <div class="p-8">
-      <div th:if="${#maps.isEmpty(cartItems)}" class="text-center py-20 text-gray-500 italic">
+    <div class="p-4 sm:p-8">
+
+      <!-- Empty Cart -->
+      <div th:if="${#maps.isEmpty(cartItems)}" class="text-center py-16 text-gray-500 italic">
         <p>Your cart is empty.</p>
         <a th:href="@{/shop}" class="text-blue-600 hover:underline">Go shopping →</a>
       </div>
 
-      <div th:if="${!#maps.isEmpty(cartItems)}" class="bg-white shadow-sm rounded-xl p-6 border border-gray-100">
-        <table class="w-full text-sm text-left border-collapse">
+      <!-- Table Wrapper -->
+      <div th:if="${!#maps.isEmpty(cartItems)}"
+           class="bg-white shadow-sm rounded-xl p-4 sm:p-6 border border-gray-100 overflow-x-auto">
+
+        <table class="w-full min-w-[600px] text-sm text-left border-collapse">
           <thead class="border-b text-gray-600 uppercase text-xs">
             <tr>
               <th class="py-3 px-4">Product</th>
@@ -72,41 +95,53 @@
               <th class="py-3 px-4 text-center"></th>
             </tr>
           </thead>
+
           <tbody>
             <tr th:each="product : ${products}" class="border-b hover:bg-gray-50 transition">
-              <td class="py-3 px-4 font-medium" th:text="${product.name}">Product Name</td>
-              <td class="py-3 px-4 text-right" th:text="${product.price}">0.00</td>
-              <td class="py-3 px-4 text-center" th:text="${cartItems[product.id]}">1</td>
+              <td class="py-3 px-4 font-medium" th:text="${product.name}"></td>
+              <td class="py-3 px-4 text-right" th:text="'₹' + ${product.price}"></td>
+              <td class="py-3 px-4 text-center" th:text="${cartItems[product.id]}"></td>
+
               <td class="py-3 px-4 text-right font-semibold text-gray-700"
-                th:text="${product.price.multiply(T(java.math.BigDecimal).valueOf((cartItems[product.id] * 1.0)))}">0.00
+                  th:text="'₹' + ${product.price.multiply(T(java.math.BigDecimal)
+                          .valueOf(cartItems[product.id] * 1.0))}">
               </td>
+
               <td class="py-3 px-4 text-center">
                 <a th:href="@{'/cart/remove/' + ${product.id}}"
-                  class="text-red-500 hover:text-red-700 text-sm font-medium">Remove</a>
+                   class="text-red-500 hover:text-red-700 text-sm font-medium">
+                   Remove
+                </a>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div class="flex justify-between items-center mt-6 border-t pt-4">
+        <!-- Total & Buttons -->
+        <div class="flex flex-col sm:flex-row justify-between gap-4 items-center mt-6 pt-4 border-t">
           <h3 class="text-lg font-semibold text-gray-700">
-            Total: <span class="text-blue-600" th:text="'₹' + ${total}">₹0.00</span>
+            Total: <span class="text-purple-600" th:text="'₹' + ${total}">₹0.00</span>
           </h3>
+
           <div class="flex gap-3">
             <a th:href="@{/cart/clear}"
-              class="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium"><i
-                class="ri-close-fill"></i> Clear Cart</a>
+               class="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium flex items-center gap-1">
+              <i class="ri-close-fill"></i> Clear
+            </a>
+
             <form th:action="@{/shop/checkout}" method="get">
               <button type="submit"
                 class="bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium flex items-center gap-2">
-                <i class="ri-checkbox-circle-line"></i> Proceed to Checkout
+                <i class="ri-checkbox-circle-line"></i> Checkout
               </button>
             </form>
           </div>
         </div>
+
       </div>
     </div>
   </main>
+
 </body>
 
 </html>

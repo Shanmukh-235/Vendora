@@ -1,110 +1,133 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vendora | Wishlist</title>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendora | Wishlist</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- ✅ Toast Notification -->
-  <div x-data="{ show: false, message: '', success: false }"
-       x-init="
-         const msg = $el.getAttribute('data-message');
-         if (msg && msg.length > 0) {
-           message = msg;
-           success = msg.toLowerCase().includes('added') || msg.toLowerCase().includes('moved');
-           show = true;
-           setTimeout(() => show = false, 3000);
-         }"
-       x-show="show"
-       x-transition
-       th:attr="data-message=${success}"
-       :class="success ? 'bg-green-600' : 'bg-blue-600'"
-       class="fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-50"
-       style="display: none;">
-    <span x-text="message"></span>
-  </div>
+<body class="bg-gray-50 font-sans text-gray-800" x-data="{ sidebarOpen: false }">
 
-  <!-- Sidebar -->
-  <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
-    <div>
-      <div class="flex items-center justify-center h-16 border-b">
-        <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
-      </div>
-      <nav class="mt-6 space-y-1">
-        <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
-        <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
-        <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
-        <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
-        <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 bg-pink-100 text-pink-600 font-medium rounded-r-full">❤️ Wishlist</a>
-        <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
-      </nav>
-    </div>
-    <div class="p-6 border-t">
-      <a href="/logout"
-         class="block text-center cursor-pointer bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
-        Logout
-      </a>
-    </div>
-  </aside>
+    <!-- Sidebar -->
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300
+                flex flex-col justify-between
+                -translate-x-full lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : ''">
 
-  <!-- Main Content -->
-  <main class="ml-64 min-h-screen">
-    <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-      <h2 class="text-lg font-semibold text-gray-700">❤️ My Wishlist</h2>
-      <div class="flex items-center space-x-4">
-        <span class="text-gray-700 text-sm">Hello,
-          <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
-        </span>
-        <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
-             alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
-      </div>
-    </header>
-
-    <section class="p-10">
-      <div class="bg-white shadow-lg rounded-2xl p-8">
-        <div th:if="${#lists.isEmpty(wishlist)}" class="text-center py-16">
-          <p class="text-gray-500 text-lg">Your wishlist is empty 😔</p>
-          <a href="/shop"
-             class="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-sm font-medium">
-            🛍️ Go Shopping
-          </a>
-        </div>
-
-        <div th:unless="${#lists.isEmpty(wishlist)}"
-             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
-          <div th:each="product : ${wishlist}" th:if="${product != null}"
-               class="bg-white shadow-md rounded-xl p-5 border border-gray-100 hover:shadow-lg transition">
-
-            <img th:if="${product.imageUrl != null}" th:src="@{${product.imageUrl}}" alt="Product Image"
-                 class="w-full h-56 object-cover rounded-lg mb-4">
-            <img th:if="${product.imageUrl == null}" src="/images/default-product.jpg" alt="Default Product"
-                 class="w-full h-56 object-cover rounded-lg mb-4">
-
-            <h2 class="text-lg font-semibold text-gray-900 mb-1" th:text="${product.name}">Product Name</h2>
-            <p class="text-gray-600 text-sm mb-2 line-clamp-2" th:text="${product.description}">Product description</p>
-            <p class="text-blue-600 font-semibold mb-4">
-              ₹<span th:text="${product.price}">0.00</span>
-            </p>
-
-            <div class="flex gap-3">
-              <a th:href="@{'/shop/wishlist/move-to-cart/' + ${product.id}}"
-                 class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-medium">
-                 🛒 Move to Cart
-              </a>
-              <a th:href="@{'/shop/wishlist/remove/' + ${product.id}}"
-                 class="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
-                 ✖ Remove
-              </a>
+        <div class="flex-grow flex flex-col">
+            <div class="flex items-center justify-center h-16 border-b">
+                <h1 class="text-xl font-bold text-pink-600">Vendora</h1>
             </div>
-          </div>
+
+            <nav class="mt-6 space-y-1 flex-grow">
+                <a href="/user/dashboard" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/cart" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex gap-3 px-6 py-3 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex gap-3 px-6 py-3 bg-pink-100 text-pink-700 rounded-r-full">❤️
+                    Wishlist</a>
+                <a href="/user/settings" class="flex gap-3 px-6 py-3 hover:bg-blue-50">⚙️ Settings</a>
+            </nav>
         </div>
-      </div>
-    </section>
-  </main>
+
+        <div class="p-6 border-t">
+            <a href="/logout"
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="fixed inset-0 bg-black/40 z-30 lg:hidden" x-show="sidebarOpen" @click="sidebarOpen = false"
+        x-transition.opacity style="display:none;"></div>
+
+    <!-- Main Content -->
+    <main class="ml-0 lg:ml-64 min-h-screen transition-all">
+
+        <!-- Header -->
+        <header class="bg-white shadow-sm px-4 sm:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+            <button class="lg:hidden text-2xl text-gray-600" @click="sidebarOpen = !sidebarOpen">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            <h2 class="text-xl font-semibold text-gray-700 flex items-center gap-2">
+                ❤️ My Wishlist
+            </h2>
+
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-sm text-gray-700">
+                    Hello, <span class="font-medium text-pink-600" th:text="${user.name}">User</span>
+                </span>
+
+                <img th:src="${user != null && user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+                    class="w-10 h-10 rounded-full border object-cover">
+            </div>
+        </header>
+
+        <!-- Wishlist Items -->
+        <section class="p-4 sm:p-10">
+            <div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(wishlist)}" class="text-center py-20">
+                    <p class="text-gray-500 text-lg">Your wishlist is empty 😔</p>
+                    <a href="/shop" class="inline-flex items-center gap-2 mt-6 bg-blue-50 text-blue-600 
+          px-4 py-2 rounded-lg text-sm font-medium shadow-sm
+          hover:bg-blue-100 transition">
+                        <i class="ri-store-2-line"></i> Start Shopping
+                    </a>
+                </div>
+
+                <!-- Single Card Per Row -->
+                <div th:unless="${#lists.isEmpty(wishlist)}" class="space-y-10">
+
+                    <div th:each="product : ${wishlist}"
+                        class="max-w-lg w-full mx-auto bg-white shadow-md border border-gray-100 rounded-xl overflow-hidden flex flex-col">
+
+                        <!-- Image -->
+                        <div class="w-full h-52 bg-gray-50 flex justify-center items-center">
+                            <img th:src="${product.imageUrl != null ? product.imageUrl : '/images/default-product.jpg'}"
+                                class="h-full object-contain" />
+                        </div>
+
+                        <!-- Details -->
+                        <div class="p-5 flex flex-col space-y-2">
+                            <h2 class="text-lg font-semibold text-gray-900" th:text="${product.name}">Product</h2>
+
+                            <p class="text-sm text-gray-600 line-clamp-2" th:text="${product.description}">
+                                Description
+                            </p>
+
+                            <p class="text-blue-600 font-bold text-lg mt-2">
+                                ₹<span th:text="${product.price}">0</span>
+                            </p>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3 p-4 border-t">
+                            <a th:href="@{'/shop/wishlist/move-to-cart/' + ${product.id}}"
+                                class="flex-1 flex justify-center items-center gap-2 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 text-sm font-medium">
+                                <i class="ri-shopping-basket-line"></i> Move to Cart
+                            </a>
+
+                            <a th:href="@{'/shop/wishlist/remove/' + ${product.id}}"
+                                class="flex-1 flex justify-center items-center gap-2 bg-red-100 text-red-600 py-2 rounded-lg hover:bg-red-200 text-sm font-medium">
+                                <i class="ri-close-circle-line"></i> Remove
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
 </body>
+
 </html>

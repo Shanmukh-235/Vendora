@@ -1,111 +1,153 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vendora | Profile Settings</title>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendora | Profile Settings</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-50 font-sans text-gray-800" x-data="{ sidebarOpen: false }">
 
-  <!-- Sidebar -->
-  <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
-    <div>
-      <div class="flex items-center justify-center h-16 border-b">
-        <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
-      </div>
-      <nav class="mt-6 space-y-1">
-        <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">
-          🏠 <span>Dashboard</span>
-        </a>
-        <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ <span>Shop</span></a>
-        <a href="/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 <span>Cart</span></a>
-        <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 <span>Orders</span></a>
-        <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ <span>Wishlist</span></a>
-        <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 bg-gray-100 text-gray-700 font-medium rounded-r-full">⚙️ <span>Settings</span></a>
-      </nav>
-    </div>
+    <!-- Sidebar -->
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300
+                flex flex-col justify-between -translate-x-full lg:translate-x-0"
+        :class="sidebarOpen ? 'translate-x-0' : ''">
 
-    <div class="p-6 border-t">
-      <a href="/logout"
-         class="block text-center cursor-pointer bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
-        Logout
-      </a>
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="ml-64 min-h-screen">
-
-    <!-- Top Navbar -->
-    <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-      <h2 class="text-xl font-semibold text-gray-800">Profile Settings</h2>
-      <div class="flex items-center space-x-4">
-        <span class="text-gray-700 text-sm">Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span></span>
-        <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
-             alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
-      </div>
-    </header>
-
-    <!-- Settings Content -->
-    <section class="p-8">
-
-      <div class="bg-white rounded-2xl shadow-md p-8 max-w-5xl mx-auto">
-        <h3 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-3">Edit Profile</h3>
-
-        <form th:action="@{/user/update-profile}" th:object="${user}" method="post" enctype="multipart/form-data"
-              class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-          <!-- Left Column: Profile Picture -->
-          <div class="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
-                 alt="Profile Picture" class="w-32 h-32 rounded-full object-cover mb-4 border">
-            <label class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
-              <i class="fa-solid fa-camera mr-2"></i>Change Photo
-              <input type="file" name="profileImage" accept="image/*" class="hidden" />
-            </label>
-          </div>
-
-          <!-- Right Column: Personal Info -->
-          <div class="space-y-5">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input type="text" th:field="*{name}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100" />
+        <div class="flex-grow flex flex-col">
+            <div class="flex items-center justify-center h-16 border-b">
+                <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" th:field="*{email}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-100 cursor-not-allowed" readonly />
-            </div>
+            <nav class="mt-6 space-y-1 flex-grow">
+                <a href="/user/dashboard" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/cart" class="flex gap-3 px-6 py-3 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex gap-3 px-6 py-3 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex gap-3 px-6 py-3 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings"
+                    class="flex gap-3 px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-r-full">⚙️ Settings</a>
+            </nav>
+        </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input type="text" th:field="*{phone}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <textarea th:field="*{address}" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-100"></textarea>
-            </div>
-          </div>
-
-          <!-- Bottom Buttons (span both columns) -->
-          <div class="md:col-span-2 flex justify-end gap-4 mt-4 border-t pt-4">
-            <a href="/user/dashboard"
-               class="cursor-pointer bg-gray-50 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 text-sm font-medium">
-              Cancel
+        <div class="p-6 border-t">
+            <a href="/logout"
+                class="block text-center bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                Logout
             </a>
-            <button type="submit"
-               class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
-              Save Changes
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+    </aside>
 
-    </section>
-  </main>
+    <!-- Mobile Overlay -->
+    <div class="fixed inset-0 bg-black/40 z-30 lg:hidden" x-show="sidebarOpen" @click="sidebarOpen = false"
+        x-transition.opacity style="display:none;"></div>
+
+    <!-- Main Content -->
+    <main class="ml-0 lg:ml-64 min-h-screen transition-all">
+
+        <!-- Topbar -->
+        <header class="bg-white shadow-sm px-4 sm:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+            <button class="lg:hidden text-2xl text-gray-600" @click="sidebarOpen = !sidebarOpen">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800">Profile Settings</h2>
+
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-sm text-gray-700">
+                    Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
+                </span>
+                <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+                    class="w-10 h-10 rounded-full border object-cover" />
+            </div>
+        </header>
+
+        <!-- Form Section -->
+        <section class="p-4 sm:p-10">
+            <div class="bg-white rounded-2xl shadow-md p-6 sm:p-10 max-w-4xl mx-auto">
+
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 pb-3 border-b">Edit Profile</h3>
+
+                <form th:action="@{/user/update-profile}" th:object="${user}" method="post"
+                    enctype="multipart/form-data" class="space-y-8">
+
+                    <!-- Profile Image Preview -->
+                    <div class="flex flex-col items-center gap-4 w-full">
+                        <img id="profilePreview"
+                            th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
+                            class="w-32 h-32 rounded-full object-cover border" />
+
+                        <label
+                            class="cursor-pointer bg-gray-50 text-black-600 px-4 py-2 rounded-lg hover:bg-gray-100 text-sm font-medium">
+                            <i class="ri-camera-fill mr-2"></i> Change Photo
+                            <input type="file" name="profileImage" accept="image/*" class="hidden"
+                                onchange="previewImage(this)" />
+                        </label>
+                    </div>
+
+                    <!-- Inputs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Full Name</label>
+                            <input th:field="*{name}"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200" />
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Email</label>
+                            <input th:field="*{email}" readonly
+                                class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm cursor-not-allowed" />
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Phone</label>
+                            <input th:field="*{phone}"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200" />
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Address</label>
+                            <textarea th:field="*{address}" rows="3"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-row flex-wrap justify-end gap-3 pt-4 border-t">
+                        <a href="/user/dashboard"
+                            class="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-medium">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-medium">
+                            Save Changes
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- Preview Script -->
+    <script>
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('profilePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+
 </body>
+
 </html>

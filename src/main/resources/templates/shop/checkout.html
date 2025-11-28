@@ -5,37 +5,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vendora | Checkout</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-800" th:with="successMessage=${success}, errorMessage=${error}">
+<body class="bg-gray-50 font-sans text-gray-800" 
+      x-data="{ sidebarOpen: false }"
+      th:with="successMessage=${success}, errorMessage=${error}">
 
-    <!-- ✅ Toast Notifications -->
-    <div x-data="{ show: false, message: '', type: '' }" x-init="
-          const success = [[${successMessage != null}]] ? '[[${successMessage}]]' : null;
-          const error = [[${errorMessage != null}]] ? '[[${errorMessage}]]' : null;
-          if (success) { message = success; type = 'success'; show = true; setTimeout(() => show = false, 3000); }
-          else if (error) { message = error; type = 'error'; show = true; setTimeout(() => show = false, 4000); }
-       " x-show="show" x-transition :class="type === 'success' ? 'bg-green-600' : 'bg-red-600'"
-        class="fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium" style="display:none;">
+    <!-- Toast -->
+    <div x-data="{ show: false, message: '', type: '' }"
+        x-init="
+            const success = [[${successMessage != null}]] ? '[[${successMessage}]]' : null;
+            const error = [[${errorMessage != null}]] ? '[[${errorMessage}]]' : null;
+            if(success){ message = success; type='success'; show=true; setTimeout(() => show=false, 3000) }
+            else if(error){ message=error; type='error'; show=true; setTimeout(() => show=false, 3000) }
+        "
+        x-show="show" x-transition.opacity
+        :class="type === 'success' ? 'bg-green-600' : 'bg-red-600'"
+        class="fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-[999]"
+        style="display:none;">
         <span x-text="message"></span>
     </div>
 
     <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 h-screen w-64 bg-white shadow-md flex flex-col justify-between">
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300
+                 flex flex-col justify-between -translate-x-full lg:translate-x-0"
+           :class="sidebarOpen ? 'translate-x-0' : ''">
+
         <div>
             <div class="flex items-center justify-center h-16 border-b">
                 <h1 class="text-xl font-bold text-blue-600">Vendora</h1>
             </div>
+
             <nav class="mt-6 space-y-1">
-                <a href="/user/dashboard" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🏠 Dashboard</a>
-                <a href="/shop" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛍️ Shop</a>
-                <a href="/shop/cart" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">🛒 Cart</a>
-                <a href="/user/orders" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">📦 Orders</a>
-                <a href="/shop/wishlist" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">❤️ Wishlist</a>
-                <a href="/user/settings" class="flex items-center gap-3 py-3 px-6 hover:bg-blue-50">⚙️ Settings</a>
+                <a href="/user/dashboard" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🏠 Dashboard</a>
+                <a href="/shop" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🛍️ Shop</a>
+                <a href="/shop/cart" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">🛒 Cart</a>
+                <a href="/user/orders" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">📦 Orders</a>
+                <a href="/shop/wishlist" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">❤️ Wishlist</a>
+                <a href="/user/settings" class="flex items-center gap-3 px-6 py-3 hover:bg-blue-50">⚙️ Settings</a>
             </nav>
         </div>
 
@@ -47,64 +58,76 @@
         </div>
     </aside>
 
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black/40 z-30 lg:hidden"
+         x-show="sidebarOpen"
+         @click="sidebarOpen = false"
+         x-transition.opacity
+         style="display:none;">
+    </div>
+
     <!-- Main -->
-    <main class="ml-64 min-h-screen">
-        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-            <h2 class="text-lg font-semibold text-gray-700">💳 Checkout</h2>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-700 text-sm">
-                    Hello, <span class="font-medium text-blue-600" th:text="${user.name}">User</span>
+    <main class="ml-0 lg:ml-64 min-h-screen transition-all">
+
+        <!-- Header -->
+        <header class="bg-white shadow-sm px-4 sm:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+            <button class="lg:hidden text-2xl text-gray-600" @click="sidebarOpen = !sidebarOpen">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-700">💳 Checkout</h2>
+
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-gray-700 text-sm">
+                    Hello, <span th:text="${user.name}" class="font-medium text-blue-600">User</span>
                 </span>
                 <img th:src="${user.profileImage != null ? user.profileImage : '/images/default-avatar.png'}"
-                    alt="Avatar" class="w-10 h-10 rounded-full border object-cover">
+                    class="w-10 h-10 rounded-full border object-cover" />
             </div>
         </header>
 
-        <section class="p-10">
-            <div class="bg-white shadow-lg rounded-2xl p-8">
+        <!-- Content -->
+        <section class="p-4 sm:p-10">
+            <div >
 
-                <!-- Empty Cart -->
                 <div th:if="${#lists.isEmpty(products)}" class="text-center text-gray-500 italic">
                     Your cart is empty.
-                    <a th:href="@{/shop}" class="text-blue-600 hover:underline">Go Shopping</a>
+                    <a th:href="@{/shop}" class="text-blue-600 hover:underline ml-2">Go Shopping</a>
                 </div>
 
-                <!-- Checkout Table -->
                 <div th:unless="${#lists.isEmpty(products)}">
-                    <table class="w-full mb-6">
+                    <table class="w-full text-sm mb-6">
                         <thead>
-                            <tr class="border-b">
-                                <th class="text-left py-2">Product</th>
-                                <th class="text-left py-2">Price</th>
-                                <th class="text-left py-2">Qty</th>
-                                <th class="text-left py-2">Subtotal</th>
+                            <tr class="border-b text-gray-700">
+                                <th class="py-2 text-left">Product</th>
+                                <th class="py-2 text-left">Price</th>
+                                <th class="py-2 text-left">Qty</th>
+                                <th class="py-2 text-left">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="product : ${products}" class="border-b">
-                                <td th:text="${product.name}" class="py-2"></td>
+                                <td class="py-2" th:text="${product.name}"></td>
                                 <td>₹<span th:text="${product.price}"></span></td>
-                                <td th:text="${cartItems[product.id]}" class="py-2"></td>
+                                <td class="py-2" th:text="${cartItems[product.id]}"></td>
                                 <td>
-                                    ₹<span
-                                        th:text="${product.price.multiply(T(java.math.BigDecimal).valueOf(cartItems[product.id].longValue()))}">
+                                    ₹<span th:text="${product.price.multiply(T(java.math.BigDecimal)
+                                        .valueOf(cartItems[product.id].longValue()))}">
                                     </span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- Total + Button -->
-                    <div class="flex justify-between items-center mt-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
                         <h3 class="text-lg font-semibold">
                             Total: ₹<span th:text="${total}"></span>
                         </h3>
 
                         <form th:action="@{/shop/checkout/confirm}" method="post">
-                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}"
-                                th:value="${_csrf.token}" />
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit"
-                                class="bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium">
+                                class="bg-green-50 text-green-600 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-medium flex items-center gap-2">
                                 <i class="ri-checkbox-circle-line"></i> Confirm Purchase
                             </button>
                         </form>
@@ -113,6 +136,7 @@
 
             </div>
         </section>
+
     </main>
 </body>
 
