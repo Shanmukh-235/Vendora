@@ -1,149 +1,1077 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendora - Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendora — Home Appliances Reimagined</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+    :root {
+      --cream: #f5f0e8;
+      --warm-white: #faf8f4;
+      --charcoal: #1a1a18;
+      --ink: #2c2c28;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --rust: #b85c38;
+      --sage: #6b7c5e;
+      --mist: #d4cfc4;
+      --shadow: rgba(26,26,24,0.12);
+    }
 
-        .nav-link {
-            position: relative;
-        }
+    html { scroll-behavior: smooth; }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background: #6366f1;
-            transition: width 0.3s ease;
-        }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--warm-white);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
-    </style>
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250,248,244,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem; font-weight: 900;
+      color: var(--charcoal);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      position: relative;
+    }
+    .logo span { color: var(--gold); }
+
+    nav { display: flex; align-items: center; gap: 36px; }
+    nav a {
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--ink); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      position: relative; transition: color 0.2s;
+    }
+    nav a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px; background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    nav a:hover { color: var(--gold); }
+    nav a:hover::after { width: 100%; }
+
+    .btn-login {
+      background: var(--charcoal);
+      color: var(--cream) !important;
+      padding: 10px 24px;
+      border-radius: 2px;
+      font-size: 0.8rem !important;
+      letter-spacing: 0.12em !important;
+      transition: background 0.2s, transform 0.2s !important;
+    }
+    .btn-login:hover { background: var(--gold) !important; color: var(--charcoal) !important; transform: translateY(-1px); }
+    .btn-login::after { display: none !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 120px 60px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-text {
+      position: absolute; bottom: -20px; left: -10px;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(100px, 18vw, 260px);
+      font-weight: 900; font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(201,168,76,0.12);
+      pointer-events: none; user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--rust);
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 5.5vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      color: var(--charcoal);
+      letter-spacing: -0.03em;
+      margin-bottom: 28px;
+    }
+    .hero h1 em {
+      font-style: italic; color: var(--gold);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem; color: #5a5a52;
+      line-height: 1.75; max-width: 420px;
+      margin-bottom: 48px; font-weight: 300;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: var(--charcoal);
+      color: var(--cream);
+      padding: 18px 36px;
+      font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+    }
+    .hero-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--gold);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+    }
+    .hero-cta:hover::before { transform: translateX(0); }
+    .hero-cta span { position: relative; z-index: 1; }
+    .hero-cta .arrow { position: relative; z-index: 1; transition: transform 0.3s; }
+    .hero-cta:hover .arrow { transform: translateX(4px); }
+    .hero-cta:hover { color: var(--charcoal); }
+
+    .hero-stats {
+      display: flex; gap: 48px;
+      margin-top: 56px; padding-top: 40px;
+      border-top: 1px solid var(--mist);
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 700;
+      color: var(--charcoal); line-height: 1;
+    }
+    .stat-num span { color: var(--gold); }
+    .stat-label {
+      font-size: 0.75rem; color: #888; 
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── HERO IMAGE SIDE ── */
+    .hero-visual {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+    }
+
+    .hero-image-frame {
+      position: relative; width: 100%; max-width: 520px;
+    }
+
+    .hero-image-frame::before {
+      content: '';
+      position: absolute; top: -24px; right: -24px;
+      width: 72%; height: 72%;
+      border: 1.5px solid rgba(201,168,76,0.3);
+      border-radius: 4px;
+      z-index: 0;
+    }
+    .hero-image-frame::after {
+      content: '';
+      position: absolute; bottom: -24px; left: -24px;
+      width: 52%; height: 52%;
+      background: rgba(201,168,76,0.06);
+      z-index: 0;
+      border-radius: 4px;
+    }
+
+    .hero-svg-wrap {
+      position: relative; z-index: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 40px 40px 90px rgba(26,26,24,0.2);
+      animation: float 6s ease-in-out infinite;
+      background: linear-gradient(145deg, #f0ebe0 0%, #e8e1d4 100%);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+    }
+
+    /* animated elements inside SVG hero */
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    @keyframes shimmer {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.3; }
+    }
+
+    .badge {
+      position: absolute; z-index: 3;
+      background: var(--charcoal);
+      color: var(--cream);
+      padding: 14px 18px;
+      border-radius: 4px;
+      box-shadow: 0 8px 32px rgba(26,26,24,0.25);
+    }
+    .badge-top { top: 20px; left: -30px; }
+    .badge-bottom { bottom: 40px; right: -30px; background: var(--gold); color: var(--charcoal); }
+
+    .badge-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7; }
+    .badge-val { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--charcoal);
+      padding: 14px 0;
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex; gap: 0;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      display: inline-flex; align-items: center; gap: 20px;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mist); padding: 0 40px;
+      flex-shrink: 0;
+    }
+    .marquee-item .dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION ── */
+    section.products {
+      padding: 100px 60px;
+      background: var(--warm-white);
+    }
+
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 60px;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--rust); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-eyebrow::before {
+      content: ''; display: block; width: 28px; height: 1px; background: var(--rust);
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 700; line-height: 1.1;
+      color: var(--charcoal); letter-spacing: -0.02em;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    .view-all {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none; font-weight: 500;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .view-all:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 60px rgba(26,26,24,0.13);
+    }
+
+    .product-card:nth-child(2) { transform: translateY(20px); }
+    .product-card:nth-child(2):hover { transform: translateY(12px); }
+    .product-card:nth-child(4) { transform: translateY(40px); }
+    .product-card:nth-child(4):hover { transform: translateY(32px); }
+
+    .product-img-wrap {
+      position: relative; overflow: hidden;
+      height: 240px; background: var(--cream);
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .product-card:hover .product-img-wrap img {
+      transform: scale(1.07);
+    }
+
+    .product-tag {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--charcoal); color: var(--cream);
+      font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 1px;
+      font-weight: 500;
+    }
+
+    .ai-btn {
+      position: absolute; bottom: 14px; right: 14px;
+      background: rgba(250,248,244,0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--charcoal);
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 7px 14px; border-radius: 2px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+      opacity: 0; transform: translateY(6px);
+    }
+    .product-card:hover .ai-btn {
+      opacity: 1; transform: translateY(0);
+    }
+    .ai-btn:hover { background: var(--gold); border-color: var(--gold); }
+
+    .product-body { padding: 20px 22px 24px; }
+    .product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700;
+      color: var(--charcoal); margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .product-meta { font-size: 0.75rem; color: #999; margin-bottom: 14px; }
+
+    .product-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .product-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--charcoal);
+    }
+    .product-price sup { font-size: 0.65em; color: var(--gold); vertical-align: super; font-family: 'DM Sans', sans-serif; }
+
+    .add-btn {
+      width: 38px; height: 38px;
+      background: var(--charcoal);
+      color: var(--cream);
+      border: none; border-radius: 2px;
+      font-size: 1.3rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .add-btn:hover { background: var(--gold); color: var(--charcoal); transform: rotate(90deg); }
+
+    /* ── AI MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(26,26,24,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 500; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--warm-white);
+      border-radius: 6px;
+      max-width: 520px; width: 90%;
+      padding: 44px;
+      position: relative;
+      box-shadow: 0 40px 100px rgba(26,26,24,0.3);
+      animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-close {
+      position: absolute; top: 18px; right: 18px;
+      background: none; border: none;
+      font-size: 1.4rem; cursor: pointer; color: #999;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--charcoal); }
+
+    .modal-eyebrow {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px; font-weight: 500;
+    }
+    .modal-eyebrow::before {
+      content: '✦'; font-size: 0.8rem;
+    }
+
+    .modal-product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 700;
+      color: var(--charcoal); margin-bottom: 24px; line-height: 1.2;
+    }
+
+    .modal-response {
+      font-size: 0.92rem; line-height: 1.85;
+      color: #4a4a42; font-weight: 300;
+      min-height: 80px;
+    }
+
+    .typing-dot {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--gold); border-radius: 50%;
+      margin: 0 2px;
+      animation: blink 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .modal-divider { height: 1px; background: var(--mist); margin: 28px 0; }
+
+    .modal-actions {
+      display: flex; gap: 12px;
+    }
+    .modal-btn-primary {
+      flex: 1; background: var(--charcoal); color: var(--cream);
+      border: none; padding: 14px 24px;
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      font-weight: 500; border-radius: 2px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-btn-primary:hover { background: var(--gold); color: var(--charcoal); }
+    .modal-btn-secondary {
+      background: transparent; color: var(--ink);
+      border: 1px solid var(--mist);
+      padding: 14px 24px;
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      font-weight: 500; border-radius: 2px; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .modal-btn-secondary:hover { border-color: var(--ink); }
+
+    /* ── PROMO BANNER ── */
+    .promo {
+      margin: 0 60px 100px;
+      background: var(--charcoal);
+      border-radius: 6px; padding: 70px 80px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 40px;
+      position: relative; overflow: hidden;
+    }
+    .promo::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+    }
+    .promo-eyebrow {
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .promo-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--gold); }
+
+    .promo h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem; font-weight: 700;
+      color: var(--cream); line-height: 1.15;
+    }
+    .promo h2 em { font-style: italic; color: var(--gold); }
+
+    .promo p {
+      color: rgba(245,240,232,0.6); font-size: 0.95rem;
+      line-height: 1.7; margin-top: 16px; font-weight: 300;
+    }
+
+    .promo-right { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+    .promo-offer {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem; font-weight: 900;
+      color: var(--gold); line-height: 1;
+    }
+    .promo-offer span { font-size: 1.8rem; font-family: 'DM Sans', sans-serif; color: rgba(245,240,232,0.5); }
+
+    .promo-cta {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--gold); color: var(--charcoal);
+      padding: 16px 32px; border-radius: 2px;
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .promo-cta:hover { background: var(--cream); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--charcoal);
+      padding: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 900;
+      color: var(--cream); text-decoration: none;
+    }
+    .footer-logo span { color: var(--gold); }
+
+    .footer-links { display: flex; gap: 32px; }
+    .footer-links a {
+      font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(245,240,232,0.5); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-copy {
+      font-size: 0.75rem; color: rgba(245,240,232,0.3);
+    }
+
+    /* ── SCROLL ANIMATION ── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-card:nth-child(2),
+      .product-card:nth-child(4) { transform: translateY(0); }
+      .product-card:nth-child(2):hover,
+      .product-card:nth-child(4):hover { transform: translateY(-8px); }
+    }
+    @media (max-width: 768px) {
+      header { padding: 16px 24px; }
+      nav { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 50px; }
+      .hero-visual { order: -1; }
+      .hero-bg-text { display: none; }
+      section.products { padding: 60px 24px; }
+      .product-grid { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .promo { margin: 0 24px 60px; padding: 44px 32px; grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 24px; padding: 40px 24px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
 </head>
 
-<body class="bg-gradient-to-b from-indigo-50 to-white text-gray-800">
+<body>
 
-    <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-xl shadow-sm z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-            <a href="/" class="text-3xl font-extrabold text-indigo-600">Vendora</a>
+  <!-- HEADER -->
+  <header>
+    <a href="/" class="logo">Vend<span>o</span>ra</a>
+    <nav>
+      <a href="#">Home</a>
+      <a href="/shop">Shop</a>
+      <a href="#products">Products</a>
+      <a href="#">Contact</a>
+      <a href="/login" class="btn-login">Login</a>
+    </nav>
+  </header>
 
-            <!-- Desktop Menu -->
-            <nav class="hidden md:flex space-x-6 items-center font-medium">
-                <a href="#" class="nav-link hover:text-indigo-600">Home</a>
-                <a href="/shop" class="nav-link hover:text-indigo-600">Shop</a>
-                <a href="#products" class="nav-link hover:text-indigo-600">Products</a>
-                <a href="#" class="nav-link hover:text-indigo-600">Contact</a>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content reveal">
+      <div class="hero-eyebrow">Curated for modern homes</div>
+      <h1>Shop Everyday<br>Appliances <em>Effortlessly</em></h1>
+      <p class="hero-desc">Premium home appliances selected for quality, durability, and design. Delivered straight to your doorstep across India.</p>
+      <a href="#products" class="hero-cta">
+        <span>Explore Collection</span>
+        <span class="arrow">→</span>
+      </a>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">2.4<span>K+</span></div>
+          <div class="stat-label">Products</div>
+        </div>
+        <div>
+          <div class="stat-num">98<span>%</span></div>
+          <div class="stat-label">Satisfaction</div>
+        </div>
+        <div>
+          <div class="stat-num">14<span>K+</span></div>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+      </div>
+    </div>
 
-                <a href="/login"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-5 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105">
-                    Login
-                </a>
-            </nav>
+    <div class="hero-visual reveal" style="transition-delay:0.15s">
+      <div class="hero-image-frame">
+        <div class="hero-svg-wrap">
+          <svg viewBox="0 0 480 560" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <defs>
+              <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f0ebe0"/>
+                <stop offset="100%" stop-color="#e2d9c8"/>
+              </linearGradient>
+              <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e8c96a"/>
+                <stop offset="100%" stop-color="#c9a84c"/>
+              </linearGradient>
+              <linearGradient id="darkGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2e2e2a"/>
+                <stop offset="100%" stop-color="#1a1a18"/>
+              </linearGradient>
+              <linearGradient id="steelGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#d8d0c2"/>
+                <stop offset="100%" stop-color="#b8b0a0"/>
+              </linearGradient>
+              <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0a1628"/>
+                <stop offset="100%" stop-color="#152040"/>
+              </linearGradient>
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1a1a18" flood-opacity="0.18"/>
+              </filter>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
 
-            <!-- Mobile Hamburger -->
-            <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none">
-                <i class="ri-menu-line text-3xl"></i>
-            </button>
+            <!-- Background -->
+            <rect width="480" height="560" fill="url(#bgGrad)"/>
+
+            <!-- Subtle grid pattern -->
+            <g opacity="0.08">
+              <line x1="0" y1="80" x2="480" y2="80" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="0" y1="160" x2="480" y2="160" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="0" y1="240" x2="480" y2="240" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="0" y1="320" x2="480" y2="320" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="0" y1="400" x2="480" y2="400" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="0" y1="480" x2="480" y2="480" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="80" y1="0" x2="80" y2="560" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="160" y1="0" x2="160" y2="560" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="240" y1="0" x2="240" y2="560" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="320" y1="0" x2="320" y2="560" stroke="#1a1a18" stroke-width="0.5"/>
+              <line x1="400" y1="0" x2="400" y2="560" stroke="#1a1a18" stroke-width="0.5"/>
+            </g>
+
+            <!-- Decorative gold circle top-right -->
+            <circle cx="400" cy="80" r="110" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.3"/>
+            <circle cx="400" cy="80" r="80" fill="none" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.2"/>
+
+            <!-- Decorative bottom-left arc -->
+            <circle cx="60" cy="500" r="120" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.07"/>
+
+            <!-- ═══════════════════════════════
+                 LARGE REFRIGERATOR (main piece)
+                 ═══════════════════════════════ -->
+            <g filter="url(#softShadow)" transform="translate(240, 280)">
+              <!-- Body -->
+              <rect x="-80" y="-160" width="160" height="300" rx="12" fill="url(#darkGrad)"/>
+              <!-- Chrome trim top -->
+              <rect x="-80" y="-160" width="160" height="6" rx="3" fill="url(#goldGrad)" opacity="0.8"/>
+              <!-- Handle left door -->
+              <rect x="-60" y="-80" width="8" height="60" rx="4" fill="url(#goldGrad)"/>
+              <!-- Handle right door -->
+              <rect x="52" y="-80" width="8" height="60" rx="4" fill="url(#goldGrad)"/>
+              <!-- Door split line -->
+              <line x1="0" y1="-150" x2="0" y2="130" stroke="#333" stroke-width="1.5"/>
+              <!-- Water/ice dispenser panel -->
+              <rect x="-50" y="50" width="45" height="70" rx="6" fill="#252520"/>
+              <rect x="-46" y="54" width="37" height="30" rx="4" fill="url(#screenGrad)"/>
+              <!-- small display glow -->
+              <rect x="-44" y="56" width="33" height="26" rx="3" fill="#1a3a6a" opacity="0.6">
+                <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+              </rect>
+              <text x="-27" y="76" font-size="8" fill="#64b5f6" text-anchor="middle" font-family="DM Sans, sans-serif">37°C</text>
+              <!-- Dispenser nozzle -->
+              <rect x="-34" y="90" width="16" height="4" rx="2" fill="#555"/>
+              <rect x="-28" y="94" width="4" height="10" rx="2" fill="#444"/>
+              <!-- Door texture dots -->
+              <circle cx="-40" cy="-40" r="2" fill="#333" opacity="0.5"/>
+              <circle cx="-40" cy="-60" r="2" fill="#333" opacity="0.5"/>
+              <circle cx="40" cy="-40" r="2" fill="#333" opacity="0.5"/>
+              <circle cx="40" cy="-60" r="2" fill="#333" opacity="0.5"/>
+              <!-- Bottom drawer -->
+              <rect x="-76" y="115" width="152" height="18" rx="4" fill="#222"/>
+              <rect x="-30" y="120" width="60" height="8" rx="4" fill="#333"/>
+            </g>
+
+            <!-- ═══════════════════
+                 MICROWAVE (top left)
+                 ═══════════════════ -->
+            <g filter="url(#softShadow)" transform="translate(100, 170)">
+              <rect x="-70" y="-45" width="140" height="90" rx="10" fill="#2a2a26"/>
+              <!-- Door glass -->
+              <rect x="-58" y="-35" width="82" height="70" rx="8" fill="#1a1a14"/>
+              <ellipse cx="-17" cy="0" rx="28" ry="28" fill="none" stroke="#333" stroke-width="2"/>
+              <ellipse cx="-17" cy="0" rx="22" ry="22" fill="#111" opacity="0.8"/>
+              <!-- revolving plate indicator -->
+              <ellipse cx="-17" cy="0" rx="14" ry="14" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5">
+                <animateTransform attributeName="transform" type="rotate" from="0 -17 0" to="360 -17 0" dur="8s" repeatCount="indefinite"/>
+              </ellipse>
+              <circle cx="-17" cy="-14" r="2" fill="url(#goldGrad)" opacity="0.7">
+                <animateTransform attributeName="transform" type="rotate" from="0 -17 0" to="360 -17 0" dur="8s" repeatCount="indefinite"/>
+              </circle>
+              <!-- Control panel -->
+              <rect x="30" y="-32" width="26" height="64" rx="4" fill="#1e1e1a"/>
+              <rect x="33" y="-28" width="20" height="14" rx="3" fill="url(#screenGrad)"/>
+              <text x="43" y="-19" font-size="7" fill="#4fc3f7" text-anchor="middle" font-family="DM Sans">1:30</text>
+              <!-- buttons -->
+              <rect x="33" y="-9" width="8" height="6" rx="2" fill="#c9a84c" opacity="0.7"/>
+              <rect x="44" y="-9" width="8" height="6" rx="2" fill="#333"/>
+              <rect x="33" y="1" width="8" height="6" rx="2" fill="#333"/>
+              <rect x="44" y="1" width="8" height="6" rx="2" fill="#333"/>
+              <rect x="33" y="11" width="8" height="6" rx="2" fill="#333"/>
+              <rect x="44" y="11" width="8" height="6" rx="2" fill="#b85c38" opacity="0.8"/>
+              <rect x="33" y="21" width="20" height="8" rx="2" fill="#333"/>
+              <!-- Door handle -->
+              <rect x="-56" y="-8" width="6" height="16" rx="3" fill="url(#steelGrad)"/>
+            </g>
+
+            <!-- ════════════════
+                 KETTLE (right)
+                 ════════════════ -->
+            <g filter="url(#softShadow)" transform="translate(380, 200)">
+              <!-- Body -->
+              <path d="M0,-60 C40,-55 55,-20 55,10 C55,45 35,65 0,68 C-35,65 -55,45 -55,10 C-55,-20 -40,-55 0,-60 Z" fill="url(#darkGrad)"/>
+              <!-- Highlight streak -->
+              <path d="M-25,-50 C-10,-55 10,-52 20,-45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-linecap="round"/>
+              <!-- Gold band -->
+              <path d="M-54,8 C-54,8 -40,20 0,20 C40,20 54,8 54,8" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
+              <!-- Handle -->
+              <path d="M48,0 C70,-10 80,20 80,30 C80,50 65,60 48,55" fill="none" stroke="url(#steelGrad)" stroke-width="8" stroke-linecap="round"/>
+              <!-- Spout -->
+              <path d="M-54,5 C-70,-5 -80,-15 -82,-10" fill="none" stroke="url(#steelGrad)" stroke-width="7" stroke-linecap="round"/>
+              <!-- Lid -->
+              <ellipse cx="0" cy="-60" rx="28" ry="10" fill="#222"/>
+              <ellipse cx="0" cy="-60" rx="28" ry="10" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.6"/>
+              <!-- Lid knob -->
+              <ellipse cx="0" cy="-68" rx="8" ry="5" fill="url(#goldGrad)"/>
+              <!-- LED light at base -->
+              <ellipse cx="0" cy="68" rx="30" ry="6" fill="url(#goldGrad)" opacity="0.4">
+                <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite"/>
+              </ellipse>
+              <!-- Base plate -->
+              <ellipse cx="0" cy="72" rx="42" ry="8" fill="#333"/>
+              <ellipse cx="0" cy="72" rx="42" ry="8" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5"/>
+            </g>
+
+            <!-- ═══════════════════════
+                 BLENDER / MIXER (bottom left)
+                 ═══════════════════════ -->
+            <g filter="url(#softShadow)" transform="translate(105, 430)">
+              <!-- Base motor -->
+              <rect x="-38" y="10" width="76" height="50" rx="8" fill="#222"/>
+              <rect x="-38" y="10" width="76" height="10" rx="4" fill="url(#goldGrad)" opacity="0.6"/>
+              <!-- Speed dial -->
+              <circle cx="0" cy="40" r="16" fill="#1a1a18"/>
+              <circle cx="0" cy="40" r="12" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="0" y1="40" x2="0" y2="30" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 0 40" to="360 0 40" dur="6s" repeatCount="indefinite"/>
+              </line>
+              <circle cx="0" cy="40" r="3" fill="url(#goldGrad)"/>
+              <!-- Jar -->
+              <path d="M-28,-60 L-32,10 L32,10 L28,-60 Z" fill="#1e3a5e" opacity="0.75"/>
+              <path d="M-28,-60 L-32,10 L32,10 L28,-60 Z" fill="none" stroke="url(#steelGrad)" stroke-width="1.5"/>
+              <!-- Jar liquid -->
+              <path d="M-30,-10 L-31,10 L31,10 L30,-10 Z" fill="#2d5a3d" opacity="0.6"/>
+              <!-- Jar lid -->
+              <rect x="-28" y="-66" width="56" height="10" rx="5" fill="#333"/>
+              <rect x="-10" y="-78" width="20" height="16" rx="4" fill="#2a2a26"/>
+              <!-- Jar handle -->
+              <path d="M30,-40 C50,-40 52,-20 50,0 L32,0" fill="none" stroke="url(#steelGrad)" stroke-width="5" stroke-linecap="round"/>
+            </g>
+
+            <!-- ═══════════════
+                 TOASTER (bottom right)
+                 ═══════════════ -->
+            <g filter="url(#softShadow)" transform="translate(360, 440)">
+              <rect x="-55" y="-28" width="110" height="56" rx="10" fill="url(#darkGrad)"/>
+              <!-- Slot openings -->
+              <rect x="-35" y="-28" width="22" height="20" rx="3" fill="#111"/>
+              <rect x="13" y="-28" width="22" height="20" rx="3" fill="#111"/>
+              <!-- Bread slices (slightly up) -->
+              <rect x="-33" y="-42" width="18" height="22" rx="2" fill="#d4a85c">
+                <animate attributeName="y" values="-42;-48;-42" dur="4s" repeatCount="indefinite"/>
+              </rect>
+              <rect x="15" y="-42" width="18" height="22" rx="2" fill="#d4a85c">
+                <animate attributeName="y" values="-42;-48;-42" dur="4s" begin="0.5s" repeatCount="indefinite"/>
+              </rect>
+              <!-- Gold side stripe -->
+              <rect x="-55" y="-28" width="6" height="56" rx="3" fill="url(#goldGrad)" opacity="0.7"/>
+              <!-- Crumb tray -->
+              <rect x="-44" y="24" width="88" height="6" rx="3" fill="#333"/>
+              <!-- Lever -->
+              <rect x="42" y="-10" width="8" height="22" rx="4" fill="url(#steelGrad)"/>
+              <rect x="42" y="5" width="8" height="8" rx="2" fill="url(#goldGrad)" opacity="0.7"/>
+              <!-- Heating glow inside slots -->
+              <rect x="-33" y="-26" width="18" height="4" rx="2" fill="#ff6b35" opacity="0.4">
+                <animate attributeName="opacity" values="0.2;0.6;0.2" dur="1.5s" repeatCount="indefinite"/>
+              </rect>
+              <rect x="15" y="-26" width="18" height="4" rx="2" fill="#ff6b35" opacity="0.4">
+                <animate attributeName="opacity" values="0.2;0.6;0.2" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+              </rect>
+            </g>
+
+            <!-- ══════════════════
+                 FLOATING SPARKLES
+                 ══════════════════ -->
+            <g fill="url(#goldGrad)">
+              <circle cx="50" cy="120" r="3" opacity="0.6">
+                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.5s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="2;4;2" dur="2.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="430" cy="350" r="4" opacity="0.5">
+                <animate attributeName="opacity" values="0.3;0.9;0.3" dur="3s" begin="1s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="3;5;3" dur="3s" begin="1s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="160" cy="500" r="2.5" opacity="0.5">
+                <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="420" cy="140" r="2" opacity="0.6">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="2.2s" begin="1.5s" repeatCount="indefinite"/>
+              </circle>
+              <!-- decorative ✦ stars -->
+              <text x="44" y="420" font-size="16" fill="#c9a84c" opacity="0.4" font-family="serif">✦</text>
+              <text x="420" y="480" font-size="12" fill="#c9a84c" opacity="0.35" font-family="serif">✦</text>
+              <text x="150" y="60" font-size="10" fill="#c9a84c" opacity="0.3" font-family="serif">✦</text>
+            </g>
+
+            <!-- ═══════════
+                 LABEL CHIP
+                 ═══════════ -->
+            <g transform="translate(240, 520)">
+              <rect x="-80" y="-14" width="160" height="28" rx="14" fill="url(#darkGrad)"/>
+              <text x="0" y="6" font-size="10" fill="#c9a84c" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="500" letter-spacing="3">PREMIUM RANGE</text>
+            </g>
+          </svg>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu"
-            class="hidden flex-col bg-white shadow-lg border-t border-gray-100 md:hidden transition-all duration-300">
-            <a href="/" class="px-6 py-3 hover:bg-indigo-50">Home</a>
-            <a href="/shop" class="px-6 py-3 hover:bg-indigo-50">Shop</a>
-            <a href="#products" class="px-6 py-3 hover:bg-indigo-50">Products</a>
-            <a href="#" class="px-6 py-3 hover:bg-indigo-50">Contact</a>
-            <a href="/login" class="px-6 py-3 bg-indigo-600 text-white text-center hover:bg-indigo-700 transition">
-                Login
-            </a>
+        <div class="badge badge-top">
+          <div class="badge-label">Free Delivery</div>
+          <div class="badge-val">Across India</div>
         </div>
-    </header>
+        <div class="badge badge-bottom">
+          <div class="badge-label">New Arrivals</div>
+          <div class="badge-val">Weekly ✦</div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Hero Section -->
-    <section id="hero" class="pt-28 pb-20">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col-reverse md:flex-row items-center gap-10">
-            <div class="md:w-1/2 text-center md:text-left">
-                <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-5 leading-tight">
-                    Shop Everyday Appliances Effortlessly
-                </h1>
-                <p class="text-gray-600 mb-8 text-lg md:text-xl">
-                    Quality appliances delivered straight to your doorstep.
-                </p>
+    <div class="hero-bg-text">VENDORA</div>
+  </section>
 
-                <a href="#products"
-                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:scale-105">
-                    Shop Now
-                </a>
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <!-- repeated for seamless loop -->
+      <span class="marquee-item">Premium Appliances <span class="dot"></span></span>
+      <span class="marquee-item">Free Shipping Pan India <span class="dot"></span></span>
+      <span class="marquee-item">2-Year Warranty <span class="dot"></span></span>
+      <span class="marquee-item">AI-Powered Recommendations <span class="dot"></span></span>
+      <span class="marquee-item">Easy Returns <span class="dot"></span></span>
+      <span class="marquee-item">24/7 Support <span class="dot"></span></span>
+      <span class="marquee-item">Curated Brands <span class="dot"></span></span>
+      <span class="marquee-item">Premium Appliances <span class="dot"></span></span>
+      <span class="marquee-item">Free Shipping Pan India <span class="dot"></span></span>
+      <span class="marquee-item">2-Year Warranty <span class="dot"></span></span>
+      <span class="marquee-item">AI-Powered Recommendations <span class="dot"></span></span>
+      <span class="marquee-item">Easy Returns <span class="dot"></span></span>
+      <span class="marquee-item">24/7 Support <span class="dot"></span></span>
+      <span class="marquee-item">Curated Brands <span class="dot"></span></span>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section id="products" class="products">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-eyebrow">Handpicked Selection</div>
+        <h2 class="section-title">Featured <em>Products</em></h2>
+      </div>
+      <a href="/shop" class="view-all">View All →</a>
+    </div>
+
+    <div class="product-grid">
+      <div th:each="product : ${products}" class="product-card reveal">
+        <div class="product-img-wrap">
+          <img th:src="${product.imageUrl}" th:alt="${product.name}" loading="lazy"/>
+          <div class="product-tag">Featured</div>
+          <button class="ai-btn"
+            th:data-id="${product.id}"
+            th:data-name="${product.name}"
+            onclick="openAI(this)">
+            ✦ AI Describe
+          </button>
+        </div>
+        <div class="product-body">
+          <div class="product-name" th:text="${product.name}">Product Name</div>
+          <div class="product-meta">Home Appliance</div>
+          <div class="product-footer">
+            <div class="product-price">
+              <sup>₹</sup><span th:text="${product.price}">0</span>
             </div>
-
-            <div class="md:w-1/2 flex justify-center">
-                <img src="https://images.unsplash.com/photo-1581091012184-6b4fc5d2e802?auto=format&fit=crop&w=700&q=80"
-                    alt="Shopping"
-                    class="rounded-3xl shadow-2xl transition-transform duration-500 w-full max-w-sm sm:max-w-md md:max-w-lg">
-            </div>
+            <a th:href="@{/shop/product/{id}(id=${product.id})}" class="add-btn" title="View Product">→</a>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Product Grid -->
-    <section id="products" class="py-14">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-10">Featured Products</h2>
+  <!-- PROMO BANNER -->
+  <div class="promo reveal">
+    <div>
+      <div class="promo-eyebrow">Limited Time Offer</div>
+      <h2>Upgrade Your Home This <em>Season</em></h2>
+      <p>Discover our curated range of top-tier appliances at unbeatable prices. Quality you can see, performance you can feel.</p>
+    </div>
+    <div class="promo-right">
+      <div class="promo-offer">20<span>% off</span></div>
+      <a href="/shop" class="promo-cta">Shop the Sale →</a>
+    </div>
+  </div>
 
-            <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                <div th:each="product : ${products}"
-                    class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition overflow-hidden group">
-                    <img th:src="@{${product.imageUrl}}" alt="Product"
-                        class="w-full h-56 sm:h-60 object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="p-5">
-                        <h3 class="text-md font-semibold text-gray-900 mb-1" th:text="${product.name}">Product Name</h3>
-                        <p class="text-indigo-600 font-small mb-4 text-sm">₹<span th:text="${product.price}"></span></p>
+  <!-- FOOTER -->
+  <footer>
+    <a href="/" class="footer-logo">Vend<span>o</span>ra</a>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Support</a>
+      <a href="#">About</a>
+    </div>
+    <div class="footer-copy">&copy; 2025 Vendora. All rights reserved.</div>
+  </footer>
 
-                        <a th:href="@{/shop/product/{id}(id=${product.id})}"
-                            class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-105 shadow-md">
-                            View Product
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- AI MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-eyebrow">AI Assistant</div>
+      <div class="modal-product-name" id="modal-product-name">Loading...</div>
+      <div class="modal-response" id="modal-response">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-actions">
+        <button class="modal-btn-primary" id="modal-view-btn">View Product</button>
+        <button class="modal-btn-secondary" id="modal-close-2">Close</button>
+      </div>
+    </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="mt-20 bg-white border-t py-8">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-gray-500 text-sm">&copy; 2025 Vendora. All rights reserved.</p>
-            <div class="flex space-x-6 text-sm text-gray-600">
-                <a href="#" class="hover:text-indigo-600">Privacy</a>
-                <a href="#" class="hover:text-indigo-600">Terms</a>
-                <a href="#" class="hover:text-indigo-600">Support</a>
-            </div>
-        </div>
-    </footer>
+  <script>
+    // ── SCROLL REVEAL
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
+    // ── AI MODAL
+    let currentProductId = null;
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            mobileMenu.classList.toggle('flex');
+    async function openAI(btn) {
+      const id   = btn.dataset.id;
+      const name = btn.dataset.name;
+      currentProductId = id;
+      const overlay = document.getElementById('modal-overlay');
+      const nameEl = document.getElementById('modal-product-name');
+      const responseEl = document.getElementById('modal-response');
+
+      nameEl.textContent = name;
+      responseEl.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
+      overlay.classList.add('open');
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            messages: [{
+              role: "user",
+              content: `You are a premium product copywriter for Vendora, a luxury home appliance store in India. Write a compelling 3-sentence product description for the "${name}". Focus on key benefits, build quality, and why it's a great buy for Indian households. Keep it warm, confident, and elegant. No bullet points, just flowing prose.`
+            }]
+          })
         });
-    </script>
+        const data = await res.json();
+        const text = data.content?.[0]?.text || "Unable to generate description.";
+        
+        // Typewriter effect
+        responseEl.textContent = '';
+        let i = 0;
+        const type = () => {
+          if (i < text.length) {
+            responseEl.textContent += text[i++];
+            setTimeout(type, 12);
+          }
+        };
+        type();
+      } catch (err) {
+        responseEl.textContent = "The AI assistant is momentarily unavailable. Please try again shortly.";
+      }
+    }
 
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-close-2').addEventListener('click', closeModal);
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    document.getElementById('modal-view-btn').addEventListener('click', () => {
+      if (currentProductId) window.location.href = `/shop/product/${currentProductId}`;
+    });
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+    }
+  </script>
 </body>
-
 </html>
